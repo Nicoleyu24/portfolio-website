@@ -1,5 +1,7 @@
 "use client"
 
+import { useEffect, useState, type CSSProperties } from "react"
+
 import { AnimatedHeader } from "@/components/animated-header"
 import { SidebarNav } from "@/components/sidebar-nav"
 import { ScrollSection } from "@/components/scroll-section"
@@ -9,9 +11,67 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 
+const playgroundCards = [
+  {
+    id: 1,
+    title: "Microinteraction Lab",
+    description: "Exploring tactile UI feedback for immersive experiences.",
+    badges: ["Experimental", "Motion"],
+  },
+  {
+    id: 2,
+    title: "Generative Layouts",
+    description: "Adaptive grid experiments driven by live data inputs.",
+    badges: ["Concept", "AI"],
+  },
+  {
+    id: 3,
+    title: "Color Theory Sandbox",
+    description: "Dynamic palettes that respond to interaction patterns.",
+    badges: ["Color", "Play"],
+  },
+  {
+    id: 4,
+    title: "3D Navigation Study",
+    description: "Testing depth and hierarchy with spatial navigation.",
+    badges: ["Spatial", "Prototype"],
+  },
+]
+
 export default function Home() {
+  const [scrollProgress, setScrollProgress] = useState(0)
+  const [isPlaygroundHovered, setIsPlaygroundHovered] = useState(false)
+
+  useEffect(() => {
+    const updateScrollProgress = () => {
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight
+      const progress = totalHeight > 0 ? window.scrollY / totalHeight : 0
+      setScrollProgress(Math.min(Math.max(progress, 0), 1))
+    }
+
+    updateScrollProgress()
+    window.addEventListener("scroll", updateScrollProgress, { passive: true })
+    window.addEventListener("resize", updateScrollProgress)
+
+    return () => {
+      window.removeEventListener("scroll", updateScrollProgress)
+      window.removeEventListener("resize", updateScrollProgress)
+    }
+  }, [])
+
+  const marqueeDuration = isPlaygroundHovered ? "24s" : "12s"
+  const handlePlaygroundEnter = () => setIsPlaygroundHovered(true)
+  const handlePlaygroundLeave = () => setIsPlaygroundHovered(false)
+
   return (
     <div className="relative">
+      <div className="fixed top-0 left-0 right-0 h-1 bg-muted z-50 overflow-hidden">
+        <motion.div
+          className="h-full bg-primary"
+          animate={{ width: `${scrollProgress * 100}%` }}
+          transition={{ ease: "linear", duration: 0.2 }}
+        />
+      </div>
       <AnimatedHeader title="Portfolio" />
       <SidebarNav />
       
@@ -103,29 +163,44 @@ export default function Home() {
               A collection of experimental designs, concepts, and creative explorations
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3].map((project, index) => (
-              <ScrollSection key={project} delay={index * 0.1}>
-                <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer group">
-                  <div className="aspect-video bg-gradient-to-br from-accent/20 to-primary/20 rounded-t-lg flex items-center justify-center group-hover:scale-105 transition-transform">
-                    <div className="text-4xl font-bold text-accent/50">Experiment {project}</div>
+          <div
+            className="marquee-container rounded-2xl border border-border/50 bg-card/80 backdrop-blur-sm p-6"
+            onMouseEnter={handlePlaygroundEnter}
+            onMouseLeave={handlePlaygroundLeave}
+            onFocusCapture={handlePlaygroundEnter}
+            onBlurCapture={handlePlaygroundLeave}
+          >
+            <div
+              className="marquee-track gap-6"
+              style={{ "--marquee-duration": marqueeDuration } as CSSProperties}
+            >
+              {[...playgroundCards, ...playgroundCards].map((project, index) => (
+                <Card
+                  key={`${project.id}-${index}`}
+                  className="w-72 flex-shrink-0 hover:shadow-xl transition-shadow cursor-pointer group overflow-hidden"
+                >
+                  <div className="aspect-video bg-gradient-to-br from-accent/20 via-primary/20 to-accent/20 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <div className="text-4xl font-bold text-accent/60">#{project.id}</div>
                   </div>
                   <CardHeader>
-                    <CardTitle>Experimental Project {project}</CardTitle>
+                    <CardTitle>{project.title}</CardTitle>
                     <CardDescription>
-                      Creative exploration and experimental design concepts
+                      {project.description}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-wrap gap-2 mb-4">
-                      <Badge variant="secondary">Experimental</Badge>
-                      <Badge variant="secondary">Concept</Badge>
+                      {project.badges.map((badge) => (
+                        <Badge key={badge} variant="secondary">
+                          {badge}
+                        </Badge>
+                      ))}
                     </div>
                     <Button variant="ghost" className="w-full">View Project →</Button>
                   </CardContent>
                 </Card>
-              </ScrollSection>
-            ))}
+              ))}
+            </div>
           </div>
         </ScrollSection>
       </section>

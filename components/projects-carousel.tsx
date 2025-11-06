@@ -29,7 +29,6 @@ export function ProjectsCarousel({ projects }: ProjectsCarouselProps) {
   const [canScrollPrev, setCanScrollPrev] = React.useState(false)
   const [canScrollNext, setCanScrollNext] = React.useState(false)
   const [selectedIndex, setSelectedIndex] = React.useState(0)
-  const [scrollProgress, setScrollProgress] = React.useState(0)
 
   const scrollPrev = React.useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev()
@@ -53,19 +52,9 @@ export function ProjectsCarousel({ projects }: ProjectsCarouselProps) {
     emblaApi.on("select", onSelect)
     emblaApi.on("reInit", onSelect)
 
-    // Track scroll progress
-    const updateScrollProgress = () => {
-      const progress = Math.max(0, Math.min(1, emblaApi.scrollProgress()))
-      setScrollProgress(progress)
-    }
-
-    emblaApi.on("scroll", updateScrollProgress)
-    updateScrollProgress()
-
     return () => {
       emblaApi.off("select", onSelect)
       emblaApi.off("reInit", onSelect)
-      emblaApi.off("scroll", updateScrollProgress)
     }
   }, [emblaApi, onSelect])
 
@@ -155,16 +144,6 @@ export function ProjectsCarousel({ projects }: ProjectsCarouselProps) {
           />
         ))}
       </div>
-
-      {/* Scroll Progress Bar */}
-      <div className="mt-2 h-0.5 bg-muted rounded-full overflow-hidden">
-        <motion.div
-          className="h-full bg-primary"
-          style={{ width: `${scrollProgress * 100}%` }}
-          transition={{ type: "spring", stiffness: 100, damping: 30 }}
-        />
-      </div>
     </div>
   )
 }
-
