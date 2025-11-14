@@ -16,25 +16,29 @@ const playgroundCards = [
     id: 1,
     title: "Microinteraction Lab",
     description: "Exploring tactile UI feedback for immersive experiences.",
-    badges: ["Experimental", "Motion"],
+    tags: ["Experimental", "Motion"],
+    palette: ["#d9e7ff", "#f5d9ff"],
   },
   {
     id: 2,
     title: "Generative Layouts",
     description: "Adaptive grid experiments driven by live data inputs.",
-    badges: ["Concept", "AI"],
+    tags: ["Concept", "AI"],
+    palette: ["#d1fff4", "#e3d7ff"],
   },
   {
     id: 3,
     title: "Color Theory Sandbox",
     description: "Dynamic palettes that respond to interaction patterns.",
-    badges: ["Color", "Play"],
+    tags: ["Color", "Play"],
+    palette: ["#ffe9d6", "#ffd1f1"],
   },
   {
     id: 4,
     title: "3D Navigation Study",
     description: "Testing depth and hierarchy with spatial navigation.",
-    badges: ["Spatial", "Prototype"],
+    tags: ["Spatial", "Prototype"],
+    palette: ["#d4f3ff", "#ffdede"],
   },
 ]
 
@@ -109,11 +113,15 @@ export default function Home() {
       {/* Projects Section */}
       <section id="projects" className="min-h-screen flex items-center justify-center px-6 py-20">
         <ScrollSection className="max-w-7xl mx-auto w-full">
-          <div className="text-center mb-16">
-            <Badge className="mb-4">Portfolio</Badge>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Featured Projects</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              A selection of my recent work showcasing design thinking and creative solutions
+          <div className="mb-12 space-y-4">
+            <div className="flex items-center gap-6">
+              <h2 className="text-sm font-semibold tracking-[0.5em] uppercase text-muted-foreground">
+                My Work
+              </h2>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+            <p className="text-lg text-muted-foreground max-w-2xl">
+              A selection of recent projects showcasing design thinking and creative solutions.
             </p>
           </div>
           <ProjectsCarousel
@@ -154,17 +162,23 @@ export default function Home() {
       </section>
 
       {/* Playground Section */}
-      <section id="playground" className="min-h-screen flex items-center justify-center px-6 py-20">
-        <ScrollSection className="max-w-7xl mx-auto w-full">
-          <div className="text-center mb-16">
-            <Badge className="mb-4">Playground</Badge>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Experimental Work</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              A collection of experimental designs, concepts, and creative explorations
+      <section id="playground" className="min-h-screen flex flex-col items-center justify-center gap-12 py-20">
+        <ScrollSection className="max-w-7xl mx-auto w-full px-6">
+          <div className="w-full space-y-4">
+            <div className="flex items-center gap-6">
+              <h2 className="text-sm font-semibold tracking-[0.5em] uppercase text-muted-foreground">
+                Playground
+              </h2>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+            <p className="text-lg text-muted-foreground max-w-2xl">
+              A rotating set of experimental posters exploring motion, texture, and storytelling.
             </p>
           </div>
+        </ScrollSection>
+        <div className="w-full px-6">
           <div
-            className="marquee-container rounded-2xl border border-border/50 bg-card/80 backdrop-blur-sm p-6"
+            className="marquee-container mx-auto max-w-7xl py-6"
             onMouseEnter={handlePlaygroundEnter}
             onMouseLeave={handlePlaygroundLeave}
             onFocusCapture={handlePlaygroundEnter}
@@ -175,34 +189,37 @@ export default function Home() {
               style={{ "--marquee-duration": marqueeDuration } as CSSProperties}
             >
               {[...playgroundCards, ...playgroundCards].map((project, index) => (
-                <Card
+                <div
                   key={`${project.id}-${index}`}
-                  className="w-72 flex-shrink-0 hover:shadow-xl transition-shadow cursor-pointer group overflow-hidden"
+                  className="w-32 sm:w-40 lg:w-48 flex-shrink-0 text-center"
                 >
-                  <div className="aspect-video bg-gradient-to-br from-accent/20 via-primary/20 to-accent/20 flex items-center justify-center group-hover:scale-105 transition-transform">
-                    <div className="text-4xl font-bold text-accent/60">#{project.id}</div>
-                  </div>
-                  <CardHeader>
-                    <CardTitle>{project.title}</CardTitle>
-                    <CardDescription>
-                      {project.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.badges.map((badge) => (
-                        <Badge key={badge} variant="secondary">
-                          {badge}
-                        </Badge>
-                      ))}
+                  <div
+                    className="relative aspect-[3/4] rounded-[32px] shadow-2xl border border-border/40 overflow-hidden"
+                    style={{
+                      background: `linear-gradient(140deg, ${project.palette[0]}, ${project.palette[1]})`,
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/35" />
+                    <div className="absolute top-5 left-5 text-sm font-semibold text-white/80">
+                      #{project.id}
                     </div>
-                    <Button variant="ghost" className="w-full">View Project →</Button>
-                  </CardContent>
-                </Card>
+                    <div className="absolute bottom-5 left-5 right-5 text-left text-white">
+                      <p className="text-[10px] uppercase tracking-[0.4em] opacity-80">
+                        {project.tags.join(" • ")}
+                      </p>
+                      <p className="mt-2 text-lg font-semibold leading-snug">
+                        {project.title}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
+                    {project.description}
+                  </p>
+                </div>
               ))}
             </div>
           </div>
-        </ScrollSection>
+        </div>
       </section>
 
       {/* Skills Section */}

@@ -124,6 +124,7 @@
 @layer utilities {
   .marquee-container {
     overflow: hidden;
+    position: relative;
   }
 
   .marquee-track {

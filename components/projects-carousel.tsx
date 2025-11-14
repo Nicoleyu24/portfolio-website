@@ -61,7 +61,7 @@ export function ProjectsCarousel({ projects }: ProjectsCarouselProps) {
   return (
     <div className="relative w-full">
       {/* Navigation Arrows */}
-      <div className="absolute -left-4 top-1/2 -translate-y-1/2 z-10">
+      <div className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 z-10">
         <Button
           variant="outline"
           size="icon"
@@ -73,7 +73,7 @@ export function ProjectsCarousel({ projects }: ProjectsCarouselProps) {
           <span className="sr-only">Previous project</span>
         </Button>
       </div>
-      <div className="absolute -right-4 top-1/2 -translate-y-1/2 z-10">
+      <div className="absolute right-0 top-1/2 translate-x-full -translate-y-1/2 z-10">
         <Button
           variant="outline"
           size="icon"
@@ -92,7 +92,7 @@ export function ProjectsCarousel({ projects }: ProjectsCarouselProps) {
           {projects.map((project, index) => (
             <div
               key={project.id}
-              className="flex-[0_0_80%] sm:flex-[0_0_45%] lg:flex-[0_0_35%] min-w-0"
+              className="basis-full sm:basis-[calc(50%-12px)] lg:basis-[calc((100%-48px)/3)] flex-shrink-0 min-w-0"
             >
               <motion.div
                 whileHover={{ scale: 1.05, y: -8 }}
