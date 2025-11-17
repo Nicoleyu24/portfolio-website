@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, type CSSProperties } from "react"
+import { useEffect, useRef, useState, type CSSProperties } from "react"
 
 import { AnimatedHeader } from "@/components/animated-header"
 import { SidebarNav } from "@/components/sidebar-nav"
@@ -9,7 +9,7 @@ import { ProjectsCarousel } from "@/components/projects-carousel"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { motion } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 
 const playgroundCards = [
   {
@@ -45,6 +45,11 @@ const playgroundCards = [
 export default function Home() {
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isPlaygroundHovered, setIsPlaygroundHovered] = useState(false)
+  const [circlePos, setCirclePos] = useState({ x: 0, y: 0 })
+  const [isDarkMode, setIsDarkMode] = useState(false)
+  const heroRef = useRef<HTMLDivElement>(null)
+  const circleSize = 420
+  const waveSize = { width: 540, height: 200 }
 
   useEffect(() => {
     const updateScrollProgress = () => {
@@ -63,6 +68,85 @@ export default function Home() {
     }
   }, [])
 
+  useEffect(() => {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)")
+    const detectTheme = () => {
+      setIsDarkMode(
+        document.documentElement.classList.contains("dark") || prefersDark.matches
+      )
+    }
+
+    detectTheme()
+    prefersDark.addEventListener("change", detectTheme)
+
+    return () => {
+      prefersDark.removeEventListener("change", detectTheme)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!heroRef.current) return
+
+    const container = heroRef.current
+    const velocity = {
+      x: (Math.random() > 0.5 ? 1 : -1) * (10 + Math.random() * 6),
+      y: 0,
+    }
+    const position = { x: 0, y: 0 }
+    let lastTime: number | null = null
+    let animationId: number
+
+    const centerCircle = () => {
+      const { clientWidth, clientHeight } = container
+      position.x = Math.max(0, clientWidth / 2 - waveSize.width / 2)
+      position.y = Math.max(0, clientHeight / 2 - waveSize.height / 2)
+      setCirclePos({ ...position })
+    }
+
+    const step = (timestamp: number) => {
+      if (lastTime === null) {
+        lastTime = timestamp
+        animationId = requestAnimationFrame(step)
+        return
+      }
+
+      const delta = (timestamp - lastTime) / 1000
+      lastTime = timestamp
+      const { clientWidth, clientHeight } = container
+
+      position.x += velocity.x * delta
+
+      position.y = Math.max(0, clientHeight / 2 - waveSize.height / 2)
+
+      if (position.x <= 0) {
+        position.x = 0
+        velocity.x = Math.abs(velocity.x)
+      } else if (position.x + waveSize.width >= clientWidth) {
+        position.x = clientWidth - waveSize.width
+        velocity.x = -Math.abs(velocity.x)
+      }
+
+      setCirclePos({ ...position })
+      animationId = requestAnimationFrame(step)
+    }
+
+    centerCircle()
+    animationId = requestAnimationFrame(step)
+    window.addEventListener("resize", centerCircle)
+
+    return () => {
+      cancelAnimationFrame(animationId)
+      window.removeEventListener("resize", centerCircle)
+    }
+  }, [waveSize.height, waveSize.width])
+
+  const { scrollYProgress: heroScrollProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  })
+
+  const quoteScaleY = useTransform(heroScrollProgress, [0, 0.5, 1], [1, 1.18, 0.9])
+
   const marqueeDuration = isPlaygroundHovered ? "24s" : "12s"
   const handlePlaygroundEnter = () => setIsPlaygroundHovered(true)
   const handlePlaygroundLeave = () => setIsPlaygroundHovered(false)
@@ -80,32 +164,52 @@ export default function Home() {
       <SidebarNav />
       
       {/* Hero Section */}
-      <section id="hero" className="min-h-screen flex items-center justify-center pt-24 px-6">
-        <ScrollSection className="max-w-7xl mx-auto text-center">
+      <section
+        id="hero"
+        ref={heroRef}
+        className="relative overflow-hidden min-h-screen flex items-center justify-center pt-24 px-6"
+      >
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{ pointerEvents: "none" }}
+        >
+          <div
+            className="absolute overflow-hidden opacity-80 transition-colors duration-500"
+            style={{
+              width: waveSize.width,
+              height: waveSize.height,
+              left: circlePos.x,
+              top: circlePos.y,
+              filter: "blur(18px)",
+              background: `radial-gradient(120% 70% at 50% 50%, ${
+                isDarkMode ? "rgba(120, 190, 255, 0.25)" : "rgba(120, 80, 190, 0.35)"
+              } 0%, transparent 65%)`,
+            }}
+          />
+        </div>
+        <ScrollSection className="max-w-5xl mx-auto text-center space-y-12">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent"
+            className="text-4xl md:text-6xl lg:text-7xl font-semibold leading-tight tracking-tight bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text text-transparent drop-shadow-sm"
+            style={{ fontFamily: "'Playfair Display', 'Cormorant Garamond', 'Times New Roman', serif", scaleY: quoteScaleY, transformOrigin: "center top" }}
           >
-            Creative Designer
+            Where behaviour meets design, clarity becomes momentum.
           </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.4 }}
-            className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto"
-          >
-            Crafting digital experiences with passion and precision
-          </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.6 }}
-            className="flex gap-4 justify-center"
+            className="flex flex-col items-center gap-3 pt-12"
           >
-            <Button size="lg">View Work</Button>
-            <Button size="lg" variant="outline">Get in Touch</Button>
+            <Button size="lg" className="w-full sm:w-auto px-8">
+              Start Collaborate
+            </Button>
+            <Button size="lg" variant="outline" className="w-full sm:w-auto px-8">
+              My Work
+            </Button>
           </motion.div>
         </ScrollSection>
       </section>
@@ -140,9 +244,10 @@ export default function Home() {
               },
               {
                 id: 3,
-                title: "SaaS Dashboard Design",
-                description: "Analytics dashboard for SaaS platform with real-time data visualization and user insights",
-                tags: ["UI/UX", "Dashboard", "SaaS"]
+                title: "Website for children with autism",
+                description: "Responsive website design based on a game designed with agentic AI, targeting children with autism and their guardians.",
+                tags: ["Game Design", "Education", "Research"],
+                link: "https://contra.com/p/sAYQ6goB-designing-a-joyful-web-experience-for-children-with-autism?referralExperimentNid=DEFAULT_REFERRAL_PROGRAM&referrerUsername=nicole_cwzib6rq"
               },
               {
                 id: 4,

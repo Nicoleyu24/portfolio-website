@@ -14,6 +14,7 @@ interface Project {
   title: string
   description: string
   tags: string[]
+  link?: string
 }
 
 interface ProjectsCarouselProps {
@@ -28,7 +29,7 @@ export function ProjectsCarousel({ projects }: ProjectsCarouselProps) {
   })
   const [canScrollPrev, setCanScrollPrev] = React.useState(false)
   const [canScrollNext, setCanScrollNext] = React.useState(false)
-  const [selectedIndex, setSelectedIndex] = React.useState(0)
+  const [scrollProgress, setScrollProgress] = React.useState(0)
 
   const scrollPrev = React.useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev()
@@ -40,9 +41,14 @@ export function ProjectsCarousel({ projects }: ProjectsCarouselProps) {
 
   const onSelect = React.useCallback(() => {
     if (!emblaApi) return
-    setSelectedIndex(emblaApi.selectedScrollSnap())
     setCanScrollPrev(emblaApi.canScrollPrev())
     setCanScrollNext(emblaApi.canScrollNext())
+    setScrollProgress(emblaApi.scrollProgress())
+  }, [emblaApi])
+
+  const onScroll = React.useCallback(() => {
+    if (!emblaApi) return
+    setScrollProgress(emblaApi.scrollProgress())
   }, [emblaApi])
 
   React.useEffect(() => {
@@ -51,17 +57,25 @@ export function ProjectsCarousel({ projects }: ProjectsCarouselProps) {
     onSelect()
     emblaApi.on("select", onSelect)
     emblaApi.on("reInit", onSelect)
+    emblaApi.on("scroll", onScroll)
 
     return () => {
       emblaApi.off("select", onSelect)
       emblaApi.off("reInit", onSelect)
+      emblaApi.off("scroll", onScroll)
     }
-  }, [emblaApi, onSelect])
+  }, [emblaApi, onSelect, onScroll])
+
+  const totalDots = 3
+  const activeDot = Math.min(
+    totalDots - 1,
+    Math.max(0, Math.round(scrollProgress * (totalDots - 1)))
+  )
 
   return (
     <div className="relative w-full">
       {/* Navigation Arrows */}
-      <div className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 z-10">
+      <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[calc(100%+20px)] z-10">
         <Button
           variant="outline"
           size="icon"
@@ -73,7 +87,7 @@ export function ProjectsCarousel({ projects }: ProjectsCarouselProps) {
           <span className="sr-only">Previous project</span>
         </Button>
       </div>
-      <div className="absolute right-0 top-1/2 translate-x-full -translate-y-1/2 z-10">
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[calc(100%+20px)] z-10">
         <Button
           variant="outline"
           size="icon"
@@ -87,57 +101,81 @@ export function ProjectsCarousel({ projects }: ProjectsCarouselProps) {
       </div>
 
       {/* Carousel */}
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex gap-6">
-          {projects.map((project, index) => (
-            <div
-              key={project.id}
-              className="basis-full sm:basis-[calc(50%-12px)] lg:basis-[calc((100%-48px)/3)] flex-shrink-0 min-w-0"
-            >
-              <motion.div
-                whileHover={{ scale: 1.05, y: -8 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="h-full"
-              >
-                <Card className="h-full hover:shadow-xl transition-all duration-300 cursor-pointer group overflow-hidden p-0">
-                  {/* Full-width image area */}
-                  <div className="w-full aspect-video bg-gradient-to-br from-primary/20 via-accent/20 to-primary/20 flex items-center justify-center group-hover:from-primary/30 group-hover:via-accent/30 group-hover:to-primary/30 transition-all duration-300">
-                    <div className="text-4xl font-bold text-primary/50 group-hover:text-primary/70 transition-colors">
-                      Project {project.id}
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <CardHeader className="p-0 pb-4">
-                      <CardTitle className="text-xl">{project.title}</CardTitle>
-                      <CardDescription className="line-clamp-2">
-                        {project.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                      <div className="flex flex-wrap gap-2">
-                        {project.tags.map((tag) => (
-                          <Badge key={tag} variant="secondary">
-                            {tag}
-                          </Badge>
-                        ))}
+      <div className="pt-4 lg:pt-6">
+        <div className="overflow-hidden px-4 sm:px-10 lg:px-16 py-6" ref={emblaRef}>
+          <div className="flex gap-8">
+            {projects.map((project) => {
+              const handleActivate = () => {
+                if (!project.link) return
+                if (typeof window !== "undefined") {
+                  window.open(project.link, "_blank", "noopener,noreferrer")
+                }
+              }
+
+              const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+                if (!project.link) return
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault()
+                  handleActivate()
+                }
+              }
+
+              return (
+                <div
+                  key={project.id}
+                  className="basis-full sm:basis-[calc(50%-16px)] lg:basis-[calc((100%-64px)/3)] flex-shrink-0 min-w-0"
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.05, y: -8 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    className="h-full"
+                  >
+                    <Card
+                      className="h-full hover:shadow-xl transition-all duration-300 cursor-pointer group overflow-hidden p-0"
+                      onClick={project.link ? handleActivate : undefined}
+                      onKeyDown={handleKeyDown}
+                      role={project.link ? "link" : undefined}
+                      tabIndex={project.link ? 0 : undefined}
+                    >
+                      {/* Full-width image area */}
+                      <div className="w-full aspect-video bg-gradient-to-br from-primary/20 via-accent/20 to-primary/20 flex items-center justify-center group-hover:from-primary/30 group-hover:via-accent/30 group-hover:to-primary/30 transition-all duration-300">
+                        <div className="text-4xl font-bold text-primary/50 group-hover:text-primary/70 transition-colors">
+                          Project {project.id}
+                        </div>
                       </div>
-                    </CardContent>
-                  </div>
-                </Card>
-              </motion.div>
-            </div>
-          ))}
+                      <div className="p-6 space-y-4">
+                        <CardHeader className="p-0">
+                          <CardTitle className="text-xl">{project.title}</CardTitle>
+                          <CardDescription className="line-clamp-2">
+                            {project.description}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                          <div className="flex flex-wrap gap-2">
+                            {project.tags.map((tag) => (
+                              <Badge key={tag} variant="secondary">
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </div>
+                    </Card>
+                  </motion.div>
+                </div>
+              )
+            })}
+          </div>
         </div>
       </div>
-
       {/* Progress Indicator */}
       <div className="flex justify-center gap-2 mt-8">
-        {projects.map((_, index) => (
+        {Array.from({ length: totalDots }).map((_, index) => (
           <div
             key={index}
             className={cn(
               "h-1.5 rounded-full transition-all duration-300",
-              index === selectedIndex
+              index === activeDot
                 ? "w-8 bg-primary"
                 : "w-1.5 bg-muted"
             )}
