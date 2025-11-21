@@ -206,7 +206,7 @@ export default function Home() {
             projects={[
               {
                 id: 1,
-                title: "E-Commerce Platform Redesign",
+                title: "Healthtech application",
                 description: "A comprehensive redesign of an e-commerce platform focusing on user experience and conversion optimization",
                 tags: ["UI/UX", "Design", "E-Commerce"]
               },
