@@ -98,7 +98,7 @@ export function AnimatedHeader({ title }: AnimatedHeaderProps) {
             ))}
           </motion.nav>
 
-          <motion.div style={{ opacity: navOpacity }}>
+          <motion.div style={{ opacity: navOpacity }} className="hidden md:block">
             <ThemeToggle />
           </motion.div>
         </div>
@@ -122,6 +122,20 @@ export function AnimatedHeader({ title }: AnimatedHeaderProps) {
             >
               P
             </motion.a>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isScrolled && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="fixed bottom-6 right-6 z-50"
+          >
+            <ThemeToggle />
           </motion.div>
         )}
       </AnimatePresence>
