@@ -99,7 +99,7 @@ export function AnimatedHeader({ title }: AnimatedHeaderProps) {
           </motion.nav>
 
           <motion.div style={{ opacity: navOpacity }} className="hidden md:block">
-            <ThemeToggle />
+            <ThemeToggle framed={false} />
           </motion.div>
         </div>
       </motion.header>

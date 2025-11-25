@@ -65,56 +65,57 @@ export function SidebarNav() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -50 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="fixed left-6 top-24 z-40 flex flex-col gap-6"
+          className="fixed left-4 top-24 z-40"
         >
-          {navItems.map((item, index) => {
-            const sectionId = item.href.substring(1)
-            const isActive = activeSection === sectionId
+          <div className="flex flex-col gap-5 rounded-[28px] border border-white/20 bg-white/10 px-6 py-5 shadow-[0_12px_40px_rgba(15,23,42,0.25)] backdrop-blur-2xl dark:border-white/15 dark:bg-slate-950/30">
+            {navItems.map((item, index) => {
+              const sectionId = item.href.substring(1)
+              const isActive = activeSection === sectionId
 
-            return (
-              <motion.a
-                key={item.href}
-                href={item.href}
-                onClick={(e) => handleClick(e, item.href)}
-                className="relative group"
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{
-                  delay: index * 0.1,
-                  duration: 0.5,
-                  ease: "easeOut",
-                }}
-              >
-                <motion.div
-                  className="flex items-center gap-3"
-                  whileHover={{ x: 5 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              return (
+                <motion.a
+                  key={item.href}
+                  href={item.href}
+                  onClick={(e) => handleClick(e, item.href)}
+                  className="relative group pl-4"
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{
+                    delay: index * 0.1,
+                    duration: 0.5,
+                    ease: "easeOut",
+                  }}
                 >
-                  {/* Active indicator */}
                   <motion.div
-                    className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-full"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: isActive ? 1 : 0 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                  
-                  {/* Nav item */}
-                  <span
-                    className={`text-sm font-medium transition-colors ${
-                      isActive
-                        ? "text-primary"
-                        : "text-muted-foreground group-hover:text-foreground"
-                    }`}
+                    className="flex items-center gap-3"
+                    whileHover={{ x: 5 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   >
-                    {item.label}
-                  </span>
-                </motion.div>
-              </motion.a>
-            )
-          })}
+                    {/* Active indicator */}
+                    <motion.div
+                      className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-full bg-primary"
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: isActive ? 1 : 0 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                    
+                    {/* Nav item */}
+                    <span
+                      className={`text-sm font-medium transition-colors ${
+                        isActive
+                          ? "text-primary"
+                          : "text-muted-foreground group-hover:text-foreground"
+                      }`}
+                    >
+                      {item.label}
+                    </span>
+                  </motion.div>
+                </motion.a>
+              )
+            })}
+          </div>
         </motion.nav>
       )}
     </AnimatePresence>
   )
 }
-

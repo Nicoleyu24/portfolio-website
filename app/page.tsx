@@ -1,15 +1,19 @@
 "use client"
 
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react"
+import { useEffect, useRef, useState, type CSSProperties } from "react"
 
 import { AnimatedHeader } from "@/components/animated-header"
 import { SidebarNav } from "@/components/sidebar-nav"
 import { ScrollSection } from "@/components/scroll-section"
-import { ProjectsCarousel } from "@/components/projects-carousel"
+import Masonry, { type MasonryItem } from "@/components/masonry"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { Plasma } from "@/components/Plasma"
+import { ScrollProgressBar } from "@/components/scroll-progress"
+import VariableProximity from "@/components/VariableProximity"
+import StarBorder from "@/components/StarBorder"
+import { motion, useInView, useScroll, useTransform } from "framer-motion"
 
 const playgroundCards = [
   {
@@ -42,54 +46,127 @@ const playgroundCards = [
   },
 ]
 
+type BentoProject = MasonryItem & {
+  title: string
+  description: string
+  tags: string[]
+  accent: string
+  background: string
+  eyebrow: string
+  order: string
+}
+
+const bentoProjects: BentoProject[] = [
+  {
+    id: "healthtech",
+    order: "01",
+    title: "Healthtech application",
+    description:
+      "A comprehensive redesign of an e-commerce platform focusing on user experience and conversion optimization",
+    tags: ["UI/UX", "Design", "E-Commerce"],
+    accent: "#8cd6ff",
+    background: "linear-gradient(135deg, rgba(140,214,255,0.28), rgba(255,255,255,0.04))",
+    eyebrow: "Product strategy",
+    height: 520,
+  },
+  {
+    id: "mobile-banking",
+    order: "02",
+    title: "Mobile Banking App",
+    description: "Modern mobile banking application with intuitive navigation and secure transaction flows",
+    tags: ["UI/UX", "Mobile", "Fintech"],
+    accent: "#f2d6ff",
+    background: "linear-gradient(160deg, rgba(242,214,255,0.25), rgba(255,255,255,0.08))",
+    eyebrow: "Fintech systems",
+    height: 520,
+  },
+  {
+    id: "autism-site",
+    order: "03",
+    title: "Website for children with autism",
+    description:
+      "Responsive website design based on a game designed with agentic AI, targeting children with autism and their guardians.",
+    tags: ["Game Design", "Education", "Research"],
+    accent: "#ffe3bd",
+    background: "linear-gradient(145deg, rgba(255,227,189,0.3), rgba(255,255,255,0.08))",
+    eyebrow: "Inclusive design",
+    url:
+      "https://contra.com/p/sAYQ6goB-designing-a-joyful-web-experience-for-children-with-autism?referralExperimentNid=DEFAULT_REFERRAL_PROGRAM&referrerUsername=nicole_cwzib6rq",
+    height: 520,
+  },
+  {
+    id: "appointments",
+    order: "04",
+    title: "Healthcare Appointment System",
+    description: "Patient-friendly appointment booking system with seamless scheduling and reminders",
+    tags: ["UI/UX", "Healthcare", "Design"],
+    accent: "#b4f2e1",
+    background: "linear-gradient(120deg, rgba(180,242,225,0.25), rgba(255,255,255,0.08))",
+    eyebrow: "Service design",
+    height: 520,
+  },
+  {
+    id: "learning-platform",
+    order: "05",
+    title: "Education Learning Platform",
+    description: "Interactive learning platform with engaging course content and progress tracking",
+    tags: ["UI/UX", "Education", "E-Learning"],
+    accent: "#d7e0ff",
+    background: "linear-gradient(150deg, rgba(215,224,255,0.3), rgba(255,255,255,0.08))",
+    eyebrow: "EdTech",
+    height: 520,
+  },
+  {
+    id: "wellness-companion",
+    order: "06",
+    title: "Wellness Habit Companion",
+    description: "Voice-guided rituals paired with adaptive feedback that keeps teams aligned on wellbeing",
+    tags: ["AI", "Voice", "Prototype"],
+    accent: "#ffd6e3",
+    background: "linear-gradient(135deg, rgba(255,214,227,0.32), rgba(255,255,255,0.08))",
+    eyebrow: "AI experiences",
+    height: 520,
+  },
+]
+
+const designTools = [
+  "Balsamiq",
+  "Canva",
+  "Chatgpt",
+  "Claude",
+  "Click Up",
+  "Cursor",
+  "Discord",
+  "Figma",
+  "FigJam",
+  "Framer",
+  "Gamma",
+  "Gemini",
+  "Github",
+  "Maze",
+  "Midjourney",
+  "Miro",
+  "Mobbin",
+  "Notion",
+  "Perplexity",
+  "Replit",
+  "Slack",
+  "Sora",
+  "User Testing",
+  "V0",
+  "Vercel",
+  "Whimsical",
+].sort((a, b) => a.localeCompare(b))
+
 export default function Home() {
-  const [scrollProgress, setScrollProgress] = useState(0)
   const [isPlaygroundHovered, setIsPlaygroundHovered] = useState(false)
+  const [isToolsHovered, setIsToolsHovered] = useState(false)
   const heroRef = useRef<HTMLDivElement>(null)
+  const heroQuoteRef = useRef<HTMLSpanElement>(null)
   const waveSize = { width: 1600, height: 360 }
-  const toolsContainerRef = useRef<HTMLDivElement>(null)
-  const toolsViewportRef = useRef<HTMLDivElement>(null)
-  const toolsTrackRef = useRef<HTMLDivElement>(null)
-  const [toolDragBounds, setToolDragBounds] = useState({ left: 0, right: 0 })
-
-  useEffect(() => {
-    const updateScrollProgress = () => {
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight
-      const progress = totalHeight > 0 ? window.scrollY / totalHeight : 0
-      setScrollProgress(Math.min(Math.max(progress, 0), 1))
-    }
-
-    updateScrollProgress()
-    window.addEventListener("scroll", updateScrollProgress, { passive: true })
-    window.addEventListener("resize", updateScrollProgress)
-
-    return () => {
-      window.removeEventListener("scroll", updateScrollProgress)
-      window.removeEventListener("resize", updateScrollProgress)
-    }
-  }, [])
-
-  useLayoutEffect(() => {
-    const recalcBounds = () => {
-      const viewport = toolsViewportRef.current
-      const track = toolsTrackRef.current
-      if (!viewport || !track) return
-      const overflow = Math.max(0, track.scrollWidth - viewport.clientWidth)
-      setToolDragBounds({ left: -overflow, right: 0 })
-    }
-
-    recalcBounds()
-
-    const resizeObserver = new ResizeObserver(recalcBounds)
-    if (toolsViewportRef.current) resizeObserver.observe(toolsViewportRef.current)
-    if (toolsTrackRef.current) resizeObserver.observe(toolsTrackRef.current)
-    window.addEventListener("resize", recalcBounds)
-
-    return () => {
-      resizeObserver.disconnect()
-      window.removeEventListener("resize", recalcBounds)
-    }
-  }, [])
+  const bentoSectionRef = useRef<HTMLDivElement>(null)
+  const isBentoInView = useInView(bentoSectionRef, { once: true, margin: "-20% 0px" })
+  const [isBentoActivated, setIsBentoActivated] = useState(false)
 
   const { scrollYProgress: heroScrollProgress } = useScroll({
     target: heroRef,
@@ -99,78 +176,116 @@ export default function Home() {
   const quoteScaleY = useTransform(heroScrollProgress, [0, 0.5, 1], [1, 1.18, 0.9])
 
   const marqueeDuration = isPlaygroundHovered ? "24s" : "12s"
+  const toolsMarqueeDuration = isToolsHovered ? "56s" : "28s"
   const handlePlaygroundEnter = () => setIsPlaygroundHovered(true)
   const handlePlaygroundLeave = () => setIsPlaygroundHovered(false)
+  const handleToolsEnter = () => setIsToolsHovered(true)
+  const handleToolsLeave = () => setIsToolsHovered(false)
+
+  useEffect(() => {
+    if (isBentoInView) setIsBentoActivated(true)
+  }, [isBentoInView])
+
+  const renderProjectCard = (project: BentoProject) => (
+    <article
+      className="flex h-full flex-col rounded-[36px] border p-7 text-left shadow-[0_35px_120px_rgba(15,23,42,0.45)] backdrop-blur-[40px] transition-shadow"
+      style={{
+        background: `linear-gradient(135deg, rgba(255,255,255,0.55), rgba(255,255,255,0.08)), ${project.background}`,
+        borderColor: `${project.accent}55`,
+        boxShadow: `0 35px 120px rgba(15,23,42,0.35), 0 15px 40px ${project.accent}35`,
+      }}
+    >
+      <div className="flex h-full flex-col">
+        <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.5em] text-slate-900/80 dark:text-white/70">
+          <div className="flex items-center gap-2">
+            <span
+              className="h-2 w-2 rounded-full"
+              style={{ backgroundColor: project.accent }}
+              aria-hidden="true"
+            />
+            <span>{project.eyebrow}</span>
+          </div>
+          <span className="text-sm tracking-[0.2em] text-slate-900/60 dark:text-white/50">{project.order}</span>
+        </div>
+        <div className="relative my-6 h-44 w-full overflow-hidden rounded-[28px] border border-white/40 bg-white/30 shadow-inner backdrop-blur-xl">
+          <div
+            className="absolute inset-0 opacity-80"
+            style={{
+              background: `radial-gradient(circle at 20% 20%, ${project.accent}40, transparent 60%), radial-gradient(circle at 80% 40%, rgba(255,255,255,0.8), transparent 50%), linear-gradient(135deg, rgba(255,255,255,0.4), transparent)`,
+            }}
+          />
+          <div className="absolute inset-x-0 bottom-3 text-center text-xs font-semibold uppercase tracking-[0.3em] text-white/80">
+            Preview space
+          </div>
+        </div>
+        <div className="space-y-3">
+          <h3 className="text-2xl font-semibold leading-snug text-slate-900 dark:text-white">{project.title}</h3>
+          <p className="text-sm leading-relaxed text-slate-700 dark:text-white/80">{project.description}</p>
+        </div>
+        <div className="mt-5 flex flex-wrap gap-2">
+          {project.tags.map((tag) => (
+            <Badge
+              key={`${project.id}-${tag}`}
+              variant="secondary"
+              className="border border-white/50 bg-white/80 px-3 py-1 text-[11px] font-medium tracking-tight text-slate-900 shadow-sm dark:bg-white/20 dark:text-white"
+            >
+              {tag}
+            </Badge>
+          ))}
+        </div>
+        <div className="mt-auto flex items-center gap-2 pt-6 text-sm font-medium text-slate-900 dark:text-white">
+          <span>{project.url ? "View case study" : "In progress"}</span>
+          {project.url ? (
+            <span aria-hidden="true">↗</span>
+          ) : (
+            <span className="text-xs uppercase tracking-[0.4em] text-slate-900/50 dark:text-white/50">soon</span>
+          )}
+        </div>
+      </div>
+    </article>
+  )
 
   return (
     <div className="relative">
-      <div className="fixed top-0 left-0 right-0 h-1 bg-muted z-50 overflow-hidden">
-        <motion.div
-          className="h-full bg-primary"
-          animate={{ width: `${scrollProgress * 100}%` }}
-          transition={{ ease: "linear", duration: 0.2 }}
-        />
-      </div>
+      <ScrollProgressBar />
       <AnimatedHeader title="Portfolio" />
       <SidebarNav />
-      
+
       {/* Hero Section */}
       <section
         id="hero"
         ref={heroRef}
-        className="relative overflow-hidden min-h-screen flex items-center justify-center pt-24 px-6"
+        className="relative overflow-hidden min-h-screen flex items-center justify-center pt-24 px-6 md:px-[155px]"
       >
-        <div aria-hidden className="absolute inset-0 pointer-events-none">
-          <motion.svg
-            viewBox="0 0 1440 320"
-            className="absolute inset-x-[-20%] top-[30%] w-[160%]"
-            preserveAspectRatio="none"
-            animate={{ x: [-120, 0, 120, 0, -120], y: [12, -6, 10, -8, 12] }}
-            transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
-            style={{ opacity: 0.55 }}
-          >
-            <defs>
-              <linearGradient id="waveGradientPrimary" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#6bc9ff" stopOpacity="0.8" />
-                <stop offset="50%" stopColor="#1a7acc" stopOpacity="0.9" />
-                <stop offset="100%" stopColor="#0a66b5" stopOpacity="0.8" />
-              </linearGradient>
-            </defs>
-            <path
-              d="M0,200 C240,120 480,280 720,200 C960,120 1200,280 1440,200 L1440,320 L0,320 Z"
-              fill="url(#waveGradientPrimary)"
-            />
-          </motion.svg>
-          <motion.svg
-            viewBox="0 0 1440 320"
-            className="absolute inset-x-[-15%] top-[38%] w-[150%]"
-            preserveAspectRatio="none"
-            animate={{ x: [140, 40, -120, 40, 140], y: [0, 10, -12, 10, 0] }}
-            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-            style={{ opacity: 0.35 }}
-          >
-            <defs>
-              <linearGradient id="waveGradientSecondary" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#94dbff" stopOpacity="0.7" />
-                <stop offset="50%" stopColor="#3aa0e6" stopOpacity="0.7" />
-                <stop offset="100%" stopColor="#0f82d0" stopOpacity="0.7" />
-              </linearGradient>
-            </defs>
-            <path
-              d="M0,220 C240,150 520,290 760,210 C1000,130 1240,260 1440,210 L1440,320 L0,320 Z"
-              fill="url(#waveGradientSecondary)"
-            />
-          </motion.svg>
+        <div aria-hidden className="absolute inset-0 -z-10">
+          <Plasma
+            color="#8cd6ff"
+            speed={1.2}
+            scale={1.8}
+            opacity={0.8}
+            direction="pingpong"
+            mouseInteractive={false}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/20 to-background/90" />
         </div>
         <ScrollSection className="max-w-5xl mx-auto text-center space-y-12">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-semibold leading-tight tracking-tight bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text text-transparent drop-shadow-sm"
-            style={{ fontFamily: "'Playfair Display', 'Cormorant Garamond', 'Times New Roman', serif", scaleY: quoteScaleY, transformOrigin: "center top" }}
+            className="text-3xl md:text-5xl lg:text-6xl font-semibold leading-tight tracking-tight"
+            style={{ scaleY: quoteScaleY, transformOrigin: "center top" }}
           >
-            Where behaviour meets design, clarity becomes momentum.
+            <VariableProximity
+              ref={heroQuoteRef}
+              label="Where behaviour meets design, clarity becomes momentum."
+              containerRef={heroQuoteRef}
+              fromFontVariationSettings="'wght' 320, 'opsz' 48, 'GRAD' 0"
+              toFontVariationSettings="'wght' 720, 'opsz' 110, 'GRAD' 250"
+              radius={260}
+              falloff="gaussian"
+              className="bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text text-transparent drop-shadow-sm inline-block text-balance font-[100]"
+            />
           </motion.h1>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -178,71 +293,55 @@ export default function Home() {
             transition={{ duration: 1, delay: 0.6 }}
             className="flex flex-col items-center gap-3 pt-12"
           >
-            <Button size="lg" className="w-full sm:w-64 px-8">
+            <StarBorder
+              as="button"
+              type="button"
+              color="rgba(125, 211, 252, 0.9)"
+              speed="8s"
+              thickness={2}
+              className="w-full sm:w-64"
+              innerClassName="inline-flex w-full items-center justify-center rounded-full border border-sky-200/60 bg-gradient-to-b from-sky-100 via-sky-200 to-sky-300 px-8 py-3 text-base font-semibold tracking-tight text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_18px_35px_rgba(15,23,42,0.35),0_8px_15px_rgba(59,130,246,0.35)] backdrop-blur-2xl transition hover:bg-gradient-to-b hover:from-sky-200 hover:via-sky-300 hover:to-sky-400 hover:translate-y-0.5 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.7),0_20px_40px_rgba(15,23,42,0.35),0_8px_18px_rgba(59,130,246,0.45)] active:translate-y-1 active:bg-gradient-to-b active:from-sky-300 active:via-sky-400 active:to-sky-500 active:shadow-[inset_0_2px_6px_rgba(0,0,0,0.25),0_10px_20px_rgba(15,23,42,0.4)] dark:border-purple-300/60 dark:bg-gradient-to-b dark:from-purple-300 dark:via-purple-500 dark:to-purple-700 dark:text-white dark:shadow-[inset_0_1px_rgba(255,255,255,0.35),0_18px_35px_rgba(76,29,149,0.55),0_8px_15px_rgba(147,51,234,0.55)] dark:hover:bg-gradient-to-b dark:hover:from-purple-400 dark:hover:via-purple-600 dark:hover:to-purple-800 dark:hover:shadow-[inset_0_1px_rgba(255,255,255,0.4),0_20px_40px_rgba(76,29,149,0.6),0_8px_20px_rgba(147,51,234,0.65)] dark:active:bg-gradient-to-b dark:active:from-purple-500 dark:active:via-purple-700 dark:active:to-purple-900 dark:active:shadow-[inset_0_3px_8px_rgba(0,0,0,0.4),0_12px_24px_rgba(76,29,149,0.5)]"
+            >
               Start Collaborate
-            </Button>
-            <Button size="lg" variant="outline" className="w-full sm:w-64 px-8">
+            </StarBorder>
+            <StarBorder
+              as="button"
+              type="button"
+              color="rgba(147, 51, 234, 0.9)"
+              speed="10s"
+              thickness={2}
+              className="w-full sm:w-64"
+              innerClassName="inline-flex w-full items-center justify-center rounded-full border border-white/70 bg-gradient-to-br from-white/80 via-white/40 to-white/20 px-8 py-3 text-base font-semibold tracking-tight text-black shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_25px_65px_rgba(15,23,42,0.35),0_10px_30px_rgba(148,163,184,0.45)] backdrop-blur-[28px] transition hover:bg-gradient-to-br hover:from-white/90 hover:via-white/55 hover:to-white/30 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_30px_70px_rgba(15,23,42,0.35),0_12px_35px_rgba(148,163,184,0.5)] dark:border-white/40 dark:bg-white/35 dark:text-white dark:shadow-[0_18px_55px_rgba(2,6,23,0.65)] dark:hover:bg-white/40"
+            >
               My Work
-            </Button>
+            </StarBorder>
           </motion.div>
         </ScrollSection>
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="min-h-screen flex items-center justify-center px-6 py-20">
-        <ScrollSection className="max-w-7xl mx-auto w-full">
-          <div className="mb-12 space-y-4">
-            <div className="flex items-center gap-6">
-              <h2 className="text-sm font-semibold tracking-[0.5em] uppercase text-muted-foreground">
-                My Work
-              </h2>
-              <div className="h-px flex-1 bg-border" />
-            </div>
-            <p className="text-lg text-muted-foreground max-w-2xl">
-              A selection of recent projects showcasing design thinking and creative solutions.
-            </p>
+      <section id="projects" className="relative z-10 -mt-32 px-6 md:px-[155px] pb-24">
+        <ScrollSection className="mx-auto w-full max-w-[calc(100vw-20px)]">
+          <div ref={bentoSectionRef} className="relative">
+            {isBentoActivated ? (
+              <Masonry
+                items={bentoProjects}
+                stagger={0.08}
+                animateFrom="bottom"
+                hoverScale={0.98}
+                className="min-h-[1080px]"
+                renderItem={(item) => renderProjectCard(item as BentoProject)}
+              />
+            ) : (
+              <div className="h-[720px]" />
+            )}
           </div>
-          <ProjectsCarousel
-            projects={[
-              {
-                id: 1,
-                title: "Healthtech application",
-                description: "A comprehensive redesign of an e-commerce platform focusing on user experience and conversion optimization",
-                tags: ["UI/UX", "Design", "E-Commerce"]
-              },
-              {
-                id: 2,
-                title: "Mobile Banking App",
-                description: "Modern mobile banking application with intuitive navigation and secure transaction flows",
-                tags: ["UI/UX", "Mobile", "Fintech"]
-              },
-              {
-                id: 3,
-                title: "Website for children with autism",
-                description: "Responsive website design based on a game designed with agentic AI, targeting children with autism and their guardians.",
-                tags: ["Game Design", "Education", "Research"],
-                link: "https://contra.com/p/sAYQ6goB-designing-a-joyful-web-experience-for-children-with-autism?referralExperimentNid=DEFAULT_REFERRAL_PROGRAM&referrerUsername=nicole_cwzib6rq"
-              },
-              {
-                id: 4,
-                title: "Healthcare Appointment System",
-                description: "Patient-friendly appointment booking system with seamless scheduling and reminders",
-                tags: ["UI/UX", "Healthcare", "Design"]
-              },
-              {
-                id: 5,
-                title: "Education Learning Platform",
-                description: "Interactive learning platform with engaging course content and progress tracking",
-                tags: ["UI/UX", "Education", "E-Learning"]
-              },
-            ]}
-          />
         </ScrollSection>
       </section>
 
       {/* Playground Section */}
       <section id="playground" className="min-h-screen flex flex-col items-center justify-center gap-12 py-20">
-        <ScrollSection className="max-w-7xl mx-auto w-full px-6">
+        <ScrollSection className="mx-auto w-full px-6 md:px-[155px]">
           <div className="w-full space-y-4">
             <div className="flex items-center gap-6">
               <h2 className="text-sm font-semibold tracking-[0.5em] uppercase text-muted-foreground">
@@ -255,9 +354,9 @@ export default function Home() {
             </p>
           </div>
         </ScrollSection>
-        <div className="w-full px-6">
+        <div className="w-full px-6 md:px-[155px]">
           <div
-            className="marquee-container mx-auto max-w-7xl py-6"
+            className="marquee-container mx-auto py-6"
             onMouseEnter={handlePlaygroundEnter}
             onMouseLeave={handlePlaygroundLeave}
             onFocusCapture={handlePlaygroundEnter}
@@ -302,8 +401,8 @@ export default function Home() {
       </section>
 
       {/* Skills Section */}
-      <section id="skillsets" className="min-h-screen flex items-center justify-center px-6 pt-12 pb-20">
-        <ScrollSection className="max-w-7xl mx-auto w-full space-y-10">
+      <section id="skillsets" className="min-h-screen flex items-center justify-center px-6 md:px-[155px] pt-12 pb-20">
+        <ScrollSection className="mx-auto w-full space-y-10">
           <div className="w-full space-y-4">
             <div className="flex items-center gap-6">
               <h2 className="text-sm font-semibold tracking-[0.5em] uppercase text-muted-foreground">
@@ -379,82 +478,54 @@ export default function Home() {
               </div>
             </motion.div>
           </div>
-          <div className="relative mt-2 w-full" ref={toolsContainerRef}>
+          <div
+            className="relative mt-[100px] w-full"
+            onMouseEnter={handleToolsEnter}
+            onMouseLeave={handleToolsLeave}
+            onFocusCapture={handleToolsEnter}
+            onBlurCapture={handleToolsLeave}
+          >
             <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-background via-background/80 to-transparent" />
             <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-background via-background/80 to-transparent" />
             <div
-              ref={toolsViewportRef}
-              className="relative overflow-hidden"
+              className="marquee-container"
               style={{
-                WebkitMaskImage: "linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%)",
-                maskImage: "linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%)",
+                WebkitMaskImage: "linear-gradient(90deg, transparent 0%, black 6%, black 94%, transparent 100%)",
+                maskImage: "linear-gradient(90deg, transparent 0%, black 6%, black 94%, transparent 100%)",
               }}
             >
-              <motion.div
-                className="flex items-center gap-4 py-4 px-1 cursor-grab whitespace-nowrap"
-                drag="x"
-                dragElastic={0.12}
-                dragConstraints={toolDragBounds}
-                whileTap={{ cursor: "grabbing" }}
-                ref={toolsTrackRef}
+              <div
+                className="marquee-track items-center gap-4 py-4"
+                style={{ "--marquee-duration": toolsMarqueeDuration } as CSSProperties}
               >
-                {[
-                  "Balsamiq",
-                  "Canva",
-                  "Chatgpt",
-                  "Claude",
-                  "Click Up",
-                  "Cursor",
-                  "Discord",
-                  "Figma",
-                  "FigJam",
-                  "Framer",
-                  "Gamma",
-                  "Gemini",
-                  "Github",
-                  "Maze",
-                  "Midjourney",
-                  "Miro",
-                  "Mobbin",
-                  "Notion",
-                  "Perplexity",
-                  "Replit",
-                  "Slack",
-                  "Sora",
-                  "User Testing",
-                  "V0",
-                  "Vercel",
-                  "Whimsical",
-                ]
-                  .sort((a, b) => a.localeCompare(b))
-                  .map((tool) => (
-                    <div
-                      key={tool}
-                      className="rounded-full border border-border/60 bg-card shadow-sm px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
-                    >
-                      {tool}
-                    </div>
-                  ))}
-              </motion.div>
+                {[...designTools, ...designTools].map((tool, index) => (
+                  <div
+                    key={`${tool}-${index}`}
+                    className="flex-shrink-0 rounded-full border border-border/60 bg-card shadow-sm px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {tool}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </ScrollSection>
       </section>
 
       {/* About Section */}
-      <section id="about" className="min-h-screen flex items-center justify-center px-6 py-20">
-        <ScrollSection className="max-w-7xl mx-auto">
+      <section id="about" className="min-h-screen flex items-center justify-center px-6 md:px-[155px] py-20">
+        <ScrollSection className="mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <Badge className="mb-4">About Me</Badge>
               <h2 className="text-4xl md:text-5xl font-bold mb-6">I'm a UX Designer</h2>
               <p className="text-lg text-muted-foreground mb-4">
-                With a passion for creating beautiful and functional user experiences, 
+                With a passion for creating beautiful and functional user experiences,
                 I specialize in turning complex problems into simple, elegant solutions.
               </p>
               <p className="text-lg text-muted-foreground mb-6">
-                My work focuses on human-centered design, where every pixel and interaction 
-                serves a purpose. I believe in the power of design to transform how people 
+                My work focuses on human-centered design, where every pixel and interaction
+                serves a purpose. I believe in the power of design to transform how people
                 interact with technology.
               </p>
               <Button variant="outline">Learn More</Button>
@@ -490,8 +561,8 @@ export default function Home() {
       </section>
 
       {/* Blog Section */}
-      <section id="blog" className="min-h-screen flex items-center justify-center px-6 py-20">
-        <ScrollSection className="max-w-7xl mx-auto w-full">
+      <section id="blog" className="min-h-screen flex items-center justify-center px-6 md:px-[155px] py-20">
+        <ScrollSection className="mx-auto w-full">
           <div className="text-center mb-16">
             <Badge className="mb-4">Blog</Badge>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">Latest Thoughts</h2>
@@ -524,12 +595,12 @@ export default function Home() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="min-h-screen flex items-center justify-center px-6 py-20">
+      <section id="contact" className="min-h-screen flex items-center justify-center px-6 md:px-[155px] py-20">
         <ScrollSection className="max-w-4xl mx-auto text-center">
           <Badge className="mb-4">Get In Touch</Badge>
           <h2 className="text-4xl md:text-5xl font-bold mb-6">Let's Work Together</h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            I'm always open to discussing new projects, creative ideas, or opportunities 
+            I'm always open to discussing new projects, creative ideas, or opportunities
             to be part of your visions.
           </p>
           <div className="flex gap-4 justify-center">
@@ -540,8 +611,8 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-6 border-t border-border">
-        <div className="max-w-7xl mx-auto text-center text-muted-foreground">
+      <footer className="py-12 px-6 md:px-[155px] border-t border-border">
+        <div className="mx-auto text-center text-muted-foreground">
           <p>© 2024 Portfolio. All rights reserved.</p>
         </div>
       </footer>
