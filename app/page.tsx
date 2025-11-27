@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState, type CSSProperties } from "react"
+import Image from "next/image"
 
 import { AnimatedHeader } from "@/components/animated-header"
 import { SidebarNav } from "@/components/sidebar-nav"
@@ -54,6 +55,10 @@ type BentoProject = MasonryItem & {
   background: string
   eyebrow: string
   order: string
+  image?: string
+  imageHeight?: string
+  imageClassName?: string
+  imageStyle?: CSSProperties
 }
 
 const bentoProjects: BentoProject[] = [
@@ -78,6 +83,9 @@ const bentoProjects: BentoProject[] = [
     accent: "#f2d6ff",
     background: "linear-gradient(160deg, rgba(242,214,255,0.25), rgba(255,255,255,0.08))",
     eyebrow: "Fintech systems",
+    image: "/projects/fintech-card.png",
+    imageHeight: "h-80",
+    imageStyle: { objectPosition: "center 80%" },
     height: 520,
   },
   {
@@ -207,16 +215,28 @@ export default function Home() {
           </div>
           <span className="text-sm tracking-[0.2em] text-slate-900/60 dark:text-white/50">{project.order}</span>
         </div>
-        <div className="relative my-6 h-44 w-full overflow-hidden rounded-[28px] border border-white/40 bg-white/30 shadow-inner backdrop-blur-xl">
-          <div
-            className="absolute inset-0 opacity-80"
-            style={{
-              background: `radial-gradient(circle at 20% 20%, ${project.accent}40, transparent 60%), radial-gradient(circle at 80% 40%, rgba(255,255,255,0.8), transparent 50%), linear-gradient(135deg, rgba(255,255,255,0.4), transparent)`,
-            }}
-          />
-          <div className="absolute inset-x-0 bottom-3 text-center text-xs font-semibold uppercase tracking-[0.3em] text-white/80">
-            Preview space
-          </div>
+        <div className={`relative my-6 w-full overflow-hidden rounded-[28px] border border-white/40 bg-white/30 shadow-inner backdrop-blur-xl ${project.imageHeight || "h-44"}`}>
+          {project.image ? (
+            <Image
+              src={project.image}
+              alt={project.title}
+              fill
+              className={`object-cover opacity-90 transition-transform duration-500 hover:scale-105 ${project.imageClassName || ""}`}
+              style={project.imageStyle}
+            />
+          ) : (
+            <>
+              <div
+                className="absolute inset-0 opacity-80"
+                style={{
+                  background: `radial-gradient(circle at 20% 20%, ${project.accent}40, transparent 60%), radial-gradient(circle at 80% 40%, rgba(255,255,255,0.8), transparent 50%), linear-gradient(135deg, rgba(255,255,255,0.4), transparent)`,
+                }}
+              />
+              <div className="absolute inset-x-0 bottom-3 text-center text-xs font-semibold uppercase tracking-[0.3em] text-white/80">
+                Preview space
+              </div>
+            </>
+          )}
         </div>
         <div className="space-y-3">
           <h3 className="text-2xl font-semibold leading-snug text-slate-900 dark:text-white">{project.title}</h3>
