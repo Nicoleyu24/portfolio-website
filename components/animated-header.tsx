@@ -30,10 +30,10 @@ export function AnimatedHeader({ title }: AnimatedHeaderProps) {
 
   // Header fades out completely
   const headerOpacity = useTransform(scrollY, [0, 100], [1, 0])
-  
+
   // Nav items fade out
   const navOpacity = useTransform(scrollY, [0, 100], [1, 0])
-  
+
   // Portfolio scales down and moves to top-left
   const portfolioScale = useTransform(scrollY, [0, 100], [1, 0.6])
   const portfolioX = useTransform(scrollY, [0, 100], [0, -200])
@@ -50,7 +50,7 @@ export function AnimatedHeader({ title }: AnimatedHeaderProps) {
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           {/* Portfolio Title */}
-          <motion.div 
+          <motion.div
             className="flex items-center gap-1 md:gap-2"
             style={{
               scale: portfolioScale,
@@ -61,13 +61,13 @@ export function AnimatedHeader({ title }: AnimatedHeaderProps) {
               {!isScrolled ? (
                 <motion.div
                   key="full"
-                  className="flex items-center gap-1 md:gap-2 overflow-hidden"
+                  className="flex items-center gap-1 md:gap-2"
                   style={{ opacity: portfolioLettersOpacity }}
                 >
                   {title.split("").map((letter, index) => (
                     <motion.span
                       key={index}
-                      className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent inline-block cursor-pointer"
+                      className="text-xl md:text-[26px] lg:text-[38px] font-notable bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent inline-block cursor-pointer"
                       whileHover={{ scale: 1.2 }}
                       transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     >
@@ -80,7 +80,7 @@ export function AnimatedHeader({ title }: AnimatedHeaderProps) {
           </motion.div>
 
           {/* Navigation Items */}
-          <motion.nav 
+          <motion.nav
             className="hidden md:flex items-center gap-6 flex-1 justify-center"
             style={{ opacity: navOpacity }}
           >
@@ -116,11 +116,11 @@ export function AnimatedHeader({ title }: AnimatedHeaderProps) {
           >
             <motion.a
               href="#hero"
-              className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent cursor-pointer block"
+              className="text-3xl md:text-4xl font-notable bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent cursor-pointer block"
               whileHover={{ scale: 1.2 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
-              P
+              N
             </motion.a>
           </motion.div>
         )}

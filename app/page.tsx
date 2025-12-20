@@ -14,7 +14,9 @@ import { Plasma } from "@/components/Plasma"
 import { ScrollProgressBar } from "@/components/scroll-progress"
 import VariableProximity from "@/components/VariableProximity"
 import StarBorder from "@/components/StarBorder"
-import { motion, useInView, useScroll, useTransform } from "framer-motion"
+import { motion, useInView, useScroll, useTransform, animate } from "framer-motion"
+import FadeContent from "@/components/FadeContent"
+import GlassSurface from "@/components/GlassSurface"
 
 const playgroundCards = [
   {
@@ -87,6 +89,7 @@ const bentoProjects: BentoProject[] = [
     imageHeight: "h-80",
     imageStyle: { objectPosition: "center 80%" },
     height: 520,
+    url: "https://contra.com/p/LOgceg2b-fintech-ui-budget-feature",
   },
   {
     id: "autism-site",
@@ -175,6 +178,7 @@ export default function Home() {
   const bentoSectionRef = useRef<HTMLDivElement>(null)
   const isBentoInView = useInView(bentoSectionRef, { once: true, margin: "-20% 0px" })
   const [isBentoActivated, setIsBentoActivated] = useState(false)
+  const playgroundContainerRef = useRef<HTMLDivElement>(null)
 
   const { scrollYProgress: heroScrollProgress } = useScroll({
     target: heroRef,
@@ -190,96 +194,133 @@ export default function Home() {
   const handleToolsEnter = () => setIsToolsHovered(true)
   const handleToolsLeave = () => setIsToolsHovered(false)
 
+  const handleMyWorkClick = () => {
+    const projectsSection = document.getElementById("projects")
+    if (projectsSection) {
+      const targetY = projectsSection.getBoundingClientRect().top + window.scrollY
+      const startY = window.scrollY
+      animate(startY, targetY, {
+        duration: 3,
+        ease: "easeOut",
+        onUpdate: (latest) => window.scrollTo(0, latest),
+      })
+    }
+  }
+
   useEffect(() => {
     if (isBentoInView) setIsBentoActivated(true)
   }, [isBentoInView])
 
-  const renderProjectCard = (project: BentoProject) => (
-    <article
-      className="flex h-full flex-col rounded-[36px] border p-7 text-left shadow-[0_35px_120px_rgba(15,23,42,0.45)] backdrop-blur-[40px] transition-shadow"
-      style={{
-        background: `linear-gradient(135deg, rgba(255,255,255,0.55), rgba(255,255,255,0.08)), ${project.background}`,
-        borderColor: `${project.accent}55`,
-        boxShadow: `0 35px 120px rgba(15,23,42,0.35), 0 15px 40px ${project.accent}35`,
-      }}
-    >
-      <div className="flex h-full flex-col">
-        <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.5em] text-slate-900/80 dark:text-white/70">
-          <div className="flex items-center gap-2">
-            <span
-              className="h-2 w-2 rounded-full"
-              style={{ backgroundColor: project.accent }}
-              aria-hidden="true"
-            />
-            <span>{project.eyebrow}</span>
-          </div>
-          <span className="text-sm tracking-[0.2em] text-slate-900/60 dark:text-white/50">{project.order}</span>
-        </div>
-        <div className={`relative my-6 w-full overflow-hidden rounded-[28px] border border-white/40 bg-white/30 shadow-inner backdrop-blur-xl ${project.imageHeight || "h-44"}`}>
-          {project.image ? (
-            <Image
-              src={project.image}
-              alt={project.title}
-              fill
-              className={`object-cover opacity-90 transition-transform duration-500 hover:scale-105 ${project.imageClassName || ""}`}
-              style={project.imageStyle}
-            />
-          ) : (
-            <>
-              <div
-                className="absolute inset-0 opacity-80"
-                style={{
-                  background: `radial-gradient(circle at 20% 20%, ${project.accent}40, transparent 60%), radial-gradient(circle at 80% 40%, rgba(255,255,255,0.8), transparent 50%), linear-gradient(135deg, rgba(255,255,255,0.4), transparent)`,
-                }}
+  const renderProjectCard = (project: BentoProject) => {
+    const card = (
+      <GlassSurface
+        className="flex h-full flex-col p-7 text-left transition-shadow shadow-[0_35px_120px_rgba(15,23,42,0.45)]"
+        borderRadius={36}
+        borderWidth={1}
+        blur={40}
+        brightness={150}
+        opacity={0.1}
+        backgroundOpacity={0.05}
+        width="100%"
+        height="100%"
+        style={{
+          borderColor: `${project.accent}40`,
+          boxShadow: `0 35px 120px rgba(15,23,42,0.35), 0 15px 40px ${project.accent}35`,
+        }}
+      >
+        <div className="flex h-full flex-col">
+          <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.5em] text-slate-900/80 dark:text-white/70">
+            <div className="flex items-center gap-2">
+              <span
+                className="h-2 w-2 rounded-full"
+                style={{ backgroundColor: project.accent }}
+                aria-hidden="true"
               />
-              <div className="absolute inset-x-0 bottom-3 text-center text-xs font-semibold uppercase tracking-[0.3em] text-white/80">
-                Preview space
-              </div>
-            </>
-          )}
+              <span>{project.eyebrow}</span>
+            </div>
+            <span className="text-sm tracking-[0.2em] text-slate-900/60 dark:text-white/50">{project.order}</span>
+          </div>
+          <div className={`relative my-6 w-full overflow-hidden rounded-[28px] border border-white/40 bg-white/30 shadow-inner backdrop-blur-xl ${project.imageHeight || "h-44"}`}>
+            {project.image ? (
+              <Image
+                src={project.image}
+                alt={project.title}
+                fill
+                className={`object-cover opacity-90 transition-transform duration-500 hover:scale-105 ${project.imageClassName || ""}`}
+                style={project.imageStyle}
+              />
+            ) : (
+              <>
+                <div
+                  className="absolute inset-0 opacity-80"
+                  style={{
+                    background: `radial-gradient(circle at 20% 20%, ${project.accent}40, transparent 60%), radial-gradient(circle at 80% 40%, rgba(255,255,255,0.8), transparent 50%), linear-gradient(135deg, rgba(255,255,255,0.4), transparent)`,
+                  }}
+                />
+                <div className="absolute inset-x-0 bottom-3 text-center text-xs font-semibold uppercase tracking-[0.3em] text-white/80">
+                  Preview space
+                </div>
+              </>
+            )}
+          </div>
+          <div className="space-y-3">
+            <h3 className="text-2xl font-semibold leading-snug text-slate-900 dark:text-white">{project.title}</h3>
+            <p className="text-sm leading-relaxed text-slate-700 dark:text-white/80">{project.description}</p>
+          </div>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {project.tags.map((tag) => (
+              <Badge
+                key={`${project.id}-${tag}`}
+                variant="secondary"
+                className="border border-white/50 bg-white/80 px-3 py-1 text-[11px] font-medium tracking-tight text-slate-900 shadow-sm dark:bg-white/20 dark:text-white"
+              >
+                {tag}
+              </Badge>
+            ))}
+          </div>
+          <div className="mt-auto flex items-center gap-2 pt-6 text-sm font-medium text-slate-900 dark:text-white">
+            <span>{project.url ? "View case study" : "In progress"}</span>
+            {project.url ? (
+              <span aria-hidden="true">↗</span>
+            ) : (
+              <span className="text-xs uppercase tracking-[0.4em] text-slate-900/50 dark:text-white/50">soon</span>
+            )}
+          </div>
         </div>
-        <div className="space-y-3">
-          <h3 className="text-2xl font-semibold leading-snug text-slate-900 dark:text-white">{project.title}</h3>
-          <p className="text-sm leading-relaxed text-slate-700 dark:text-white/80">{project.description}</p>
-        </div>
-        <div className="mt-5 flex flex-wrap gap-2">
-          {project.tags.map((tag) => (
-            <Badge
-              key={`${project.id}-${tag}`}
-              variant="secondary"
-              className="border border-white/50 bg-white/80 px-3 py-1 text-[11px] font-medium tracking-tight text-slate-900 shadow-sm dark:bg-white/20 dark:text-white"
-            >
-              {tag}
-            </Badge>
-          ))}
-        </div>
-        <div className="mt-auto flex items-center gap-2 pt-6 text-sm font-medium text-slate-900 dark:text-white">
-          <span>{project.url ? "View case study" : "In progress"}</span>
-          {project.url ? (
-            <span aria-hidden="true">↗</span>
-          ) : (
-            <span className="text-xs uppercase tracking-[0.4em] text-slate-900/50 dark:text-white/50">soon</span>
-          )}
-        </div>
-      </div>
-    </article>
-  )
+      </GlassSurface>
+    )
+
+    if (project.url) {
+      return (
+        <a
+          href={project.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block h-full"
+        >
+          {card}
+        </a>
+      )
+    }
+
+    return card
+  }
 
   return (
     <div className="relative">
       <ScrollProgressBar />
-      <AnimatedHeader title="Portfolio" />
+      <AnimatedHeader title="Nicole Yu" />
       <SidebarNav />
 
       {/* Hero Section */}
       <section
         id="hero"
         ref={heroRef}
-        className="relative overflow-hidden min-h-screen flex items-center justify-center pt-24 px-6 md:px-[155px]"
+        className="relative overflow-hidden min-h-screen flex items-center justify-center pt-[250px] pb-[1000px] px-6 md:px-[155px]"
       >
         <div aria-hidden className="absolute inset-0 -z-10">
           <Plasma
-            color="#8cd6ff"
+            color="#2563eb"
             speed={1.2}
             scale={1.8}
             opacity={0.8}
@@ -293,25 +334,25 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="text-3xl md:text-5xl lg:text-6xl font-semibold leading-tight tracking-tight"
+            className="text-5xl md:text-7xl lg:text-8xl font-semibold leading-tight tracking-tight"
             style={{ scaleY: quoteScaleY, transformOrigin: "center top" }}
           >
             <VariableProximity
               ref={heroQuoteRef}
               label="Where behaviour meets design, clarity becomes momentum."
               containerRef={heroQuoteRef}
-              fromFontVariationSettings="'wght' 320, 'opsz' 48, 'GRAD' 0"
-              toFontVariationSettings="'wght' 720, 'opsz' 110, 'GRAD' 250"
+              fromFontVariationSettings="'wght' 800, 'opsz' 48, 'GRAD' 0"
+              toFontVariationSettings="'wght' 1000, 'opsz' 110, 'GRAD' 250"
               radius={260}
               falloff="gaussian"
-              className="bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text text-transparent drop-shadow-sm inline-block text-balance font-[100]"
+              className="text-white/70 mix-blend-overlay backdrop-blur-[1px] drop-shadow-sm inline-block text-balance font-black"
             />
           </motion.h1>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.6 }}
-            className="flex flex-col items-center gap-3 pt-12"
+            className="flex flex-col items-center gap-3 pt-[100px]"
           >
             <StarBorder
               as="button"
@@ -327,6 +368,7 @@ export default function Home() {
             <StarBorder
               as="button"
               type="button"
+              onClick={handleMyWorkClick}
               color="rgba(147, 51, 234, 0.9)"
               speed="10s"
               thickness={2}
@@ -340,7 +382,7 @@ export default function Home() {
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="relative z-10 -mt-32 px-6 md:px-[155px] pb-24">
+      <section id="projects" className="relative z-10 -mt-[800px] px-6 md:px-[155px] pb-24">
         <ScrollSection className="mx-auto w-full max-w-[calc(100vw-20px)]">
           <div ref={bentoSectionRef} className="relative">
             {isBentoActivated ? (
@@ -360,7 +402,7 @@ export default function Home() {
       </section>
 
       {/* Playground Section */}
-      <section id="playground" className="relative min-h-screen flex flex-col items-center justify-center gap-12 py-20 overflow-hidden">
+      <section id="playground" className="relative min-h-screen flex flex-col items-center justify-center gap-12 py-20 pb-8 overflow-hidden">
         <div
           className="absolute inset-x-0 bottom-0 top-[80px] pointer-events-none"
           aria-hidden
@@ -383,35 +425,61 @@ export default function Home() {
           </div>
         </ScrollSection>
 
-        <div className="relative w-full h-[600px] max-w-[1400px] mx-auto mt-10">
+        <div ref={playgroundContainerRef} className="relative w-full max-w-[1200px] mx-auto mt-20 flex flex-col md:block md:h-[800px] gap-8 px-6">
           {playgroundCards.map((project, index) => {
-            // Calculate scattered positions
-            const positions = [
-              { top: "10%", left: "15%", rotate: "-6deg" },
-              { top: "20%", right: "15%", rotate: "4deg" },
-              { bottom: "15%", left: "25%", rotate: "2deg" },
-              { bottom: "25%", right: "20%", rotate: "-3deg" },
+            // Define random-looking positions and sizes for desktop
+            const cardStyles = [
+              // Card 1: Top left, slightly rotated, portrait
+              {
+                desktop: "md:absolute md:top-0 md:left-[5%] md:w-[280px] md:aspect-[3/4] md:-rotate-6",
+                mobile: "w-full aspect-[3/4]",
+              },
+              // Card 2: Top right, smaller, square-ish
+              {
+                desktop: "md:absolute md:top-[10%] md:right-[10%] md:w-[240px] md:aspect-square md:rotate-3",
+                mobile: "w-full aspect-square",
+              },
+              // Card 3: Bottom left (center-ish), medium, landscape-ish
+              {
+                desktop: "md:absolute md:bottom-[15%] md:left-[20%] md:w-[320px] md:aspect-[4/3] md:-rotate-2",
+                mobile: "w-full aspect-[4/3]",
+              },
+              // Card 4: Bottom right, large, landscape
+              {
+                desktop: "md:absolute md:bottom-[5%] md:right-[5%] md:w-[380px] md:aspect-[16/10] md:rotate-6",
+                mobile: "w-full aspect-[16/10]",
+              },
             ]
-            const pos = positions[index % positions.length]
+
+            const style = cardStyles[index] || cardStyles[0]
 
             return (
               <motion.div
                 key={project.id}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="absolute w-64 md:w-72 aspect-[3/4] rounded-[32px] shadow-2xl border border-border/40 overflow-hidden hover:z-20 hover:scale-105 transition-all duration-300"
+                drag
+                dragConstraints={playgroundContainerRef}
+                dragElastic={0.2}
+                dragMomentum={false}
+                initial={{ opacity: 0, y: 50, rotate: 0 }}
+                whileInView={{
+                  opacity: 1,
+                  y: 0,
+                  rotate: index === 0 ? -6 : index === 1 ? 3 : index === 2 ? -2 : 6
+                }}
+                whileHover={{ scale: 1.05, zIndex: 20 }}
+                whileDrag={{ scale: 1.1, zIndex: 50, cursor: "grabbing" }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.8, delay: index * 0.15, ease: "easeOut" }}
+                className={`relative rounded-[32px] shadow-2xl border border-border/40 overflow-hidden cursor-grab ${style.mobile} ${style.desktop}`}
                 style={{
-                  ...pos,
                   background: `linear-gradient(140deg, ${project.palette[0]}, ${project.palette[1]})`,
                 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/35" />
-                <div className="absolute top-6 left-6 text-sm font-semibold text-white/80">
+                <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/35 pointer-events-none" />
+                <div className="absolute top-6 left-6 text-sm font-semibold text-white/80 pointer-events-none">
                   #{project.id}
                 </div>
-                <div className="absolute bottom-6 left-6 right-6 text-left text-white">
+                <div className="absolute bottom-6 left-6 right-6 text-left text-white pointer-events-none">
                   <p className="text-[10px] uppercase tracking-[0.4em] opacity-80">
                     {project.tags.join(" • ")}
                   </p>
@@ -426,7 +494,7 @@ export default function Home() {
       </section>
 
       {/* Skills Section */}
-      <section id="skillsets" className="min-h-screen flex items-center justify-center px-6 md:px-[155px] pt-12 pb-20">
+      <section id="skillsets" className="min-h-screen flex items-center justify-center px-6 md:px-[155px] pt-0 pb-20">
         <ScrollSection className="mx-auto w-full space-y-10">
           <div className="w-full space-y-4">
             <div className="flex items-center gap-6">
