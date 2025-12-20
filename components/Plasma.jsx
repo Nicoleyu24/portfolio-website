@@ -1,11 +1,15 @@
-import { useEffect, useRef } from 'react';
-import { Renderer, Program, Mesh, Triangle } from 'ogl';
-import './Plasma.css';
+import { Mesh, Program, Renderer, Triangle } from "ogl";
+import { useEffect, useRef } from "react";
+import "./Plasma.css";
 
-const hexToRgb = hex => {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  if (!result) return [1, 0.5, 0.2];
-  return [parseInt(result[1], 16) / 255, parseInt(result[2], 16) / 255, parseInt(result[3], 16) / 255];
+const hexToRgb = (hex) => {
+	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+	if (!result) return [1, 0.5, 0.2];
+	return [
+		parseInt(result[1], 16) / 255,
+		parseInt(result[2], 16) / 255,
+		parseInt(result[3], 16) / 255,
+	];
 };
 
 const vertex = `#version 300 es
@@ -81,164 +85,171 @@ void main() {
 }`;
 
 export const Plasma = ({
-  color = '#ffffff',
-  speed = 1,
-  direction = 'forward',
-  scale = 1,
-  opacity = 1,
-  mouseInteractive = true
+	color = "#ffffff",
+	speed = 1,
+	direction = "forward",
+	scale = 1,
+	opacity = 1,
+	mouseInteractive = true,
 }) => {
-  const containerRef = useRef(null);
-  const mousePos = useRef({ x: 0, y: 0 });
+	const containerRef = useRef(null);
+	const mousePos = useRef({ x: 0, y: 0 });
 
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const containerEl = containerRef.current;
+	useEffect(() => {
+		if (!containerRef.current) return;
+		const containerEl = containerRef.current;
 
-    const useCustomColor = color ? 1.0 : 0.0;
-    const customColorRgb = color ? hexToRgb(color) : [1, 1, 1];
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const useCustomColor = color ? 1.0 : 0.0;
+		const customColorRgb = color ? hexToRgb(color) : [1, 1, 1];
+		const prefersReducedMotion = window.matchMedia(
+			"(prefers-reduced-motion: reduce)",
+		).matches;
 
-    if (prefersReducedMotion) {
-      const fallback = `radial-gradient(circle at 20% 20%, ${color}55, transparent 55%), radial-gradient(circle at 80% 0%, ${color}33, transparent 45%), linear-gradient(180deg, rgba(4,7,15,0.9), rgba(1,2,6,0.6))`;
-      const previousBackground = containerEl.style.background;
-      containerEl.style.background = fallback;
+		if (prefersReducedMotion) {
+			const fallback = `radial-gradient(circle at 20% 20%, ${color}55, transparent 55%), radial-gradient(circle at 80% 0%, ${color}33, transparent 45%), linear-gradient(180deg, rgba(4,7,15,0.9), rgba(1,2,6,0.6))`;
+			const previousBackground = containerEl.style.background;
+			containerEl.style.background = fallback;
 
-      return () => {
-        containerEl.style.background = previousBackground;
-      };
-    }
+			return () => {
+				containerEl.style.background = previousBackground;
+			};
+		}
 
-    const directionMultiplier = direction === 'reverse' ? -1.0 : 1.0;
+		const directionMultiplier = direction === "reverse" ? -1.0 : 1.0;
 
-    const renderer = new Renderer({
-      webgl: 2,
-      alpha: true,
-      antialias: false,
-      dpr: Math.min(window.devicePixelRatio || 1, 1.5)
-    });
-    const gl = renderer.gl;
-    const canvas = gl.canvas;
-    canvas.style.display = 'block';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    containerEl.appendChild(canvas);
+		const renderer = new Renderer({
+			webgl: 2,
+			alpha: true,
+			antialias: false,
+			dpr: Math.min(window.devicePixelRatio || 1, 1.5),
+		});
+		const gl = renderer.gl;
+		const canvas = gl.canvas;
+		canvas.style.display = "block";
+		canvas.style.width = "100%";
+		canvas.style.height = "100%";
+		containerEl.appendChild(canvas);
 
-    const geometry = new Triangle(gl);
+		const geometry = new Triangle(gl);
 
-    const program = new Program(gl, {
-      vertex: vertex,
-      fragment: fragment,
-      uniforms: {
-        iTime: { value: 0 },
-        iResolution: { value: new Float32Array([1, 1]) },
-        uCustomColor: { value: new Float32Array(customColorRgb) },
-        uUseCustomColor: { value: useCustomColor },
-        uSpeed: { value: speed * 0.4 },
-        uDirection: { value: directionMultiplier },
-        uScale: { value: scale },
-        uOpacity: { value: opacity },
-        uMouse: { value: new Float32Array([0, 0]) },
-        uMouseInteractive: { value: mouseInteractive ? 1.0 : 0.0 }
-      }
-    });
+		const program = new Program(gl, {
+			vertex: vertex,
+			fragment: fragment,
+			uniforms: {
+				iTime: { value: 0 },
+				iResolution: { value: new Float32Array([1, 1]) },
+				uCustomColor: { value: new Float32Array(customColorRgb) },
+				uUseCustomColor: { value: useCustomColor },
+				uSpeed: { value: speed * 0.4 },
+				uDirection: { value: directionMultiplier },
+				uScale: { value: scale },
+				uOpacity: { value: opacity },
+				uMouse: { value: new Float32Array([0, 0]) },
+				uMouseInteractive: { value: mouseInteractive ? 1.0 : 0.0 },
+			},
+		});
 
-    const mesh = new Mesh(gl, { geometry, program });
+		const mesh = new Mesh(gl, { geometry, program });
 
-    const handleMouseMove = e => {
-      if (!mouseInteractive || !containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      mousePos.current.x = e.clientX - rect.left;
-      mousePos.current.y = e.clientY - rect.top;
-      const mouseUniform = program.uniforms.uMouse.value;
-      mouseUniform[0] = mousePos.current.x;
-      mouseUniform[1] = mousePos.current.y;
-    };
+		const handleMouseMove = (e) => {
+			if (!mouseInteractive || !containerRef.current) return;
+			const rect = containerRef.current.getBoundingClientRect();
+			mousePos.current.x = e.clientX - rect.left;
+			mousePos.current.y = e.clientY - rect.top;
+			const mouseUniform = program.uniforms.uMouse.value;
+			mouseUniform[0] = mousePos.current.x;
+			mouseUniform[1] = mousePos.current.y;
+		};
 
-    if (mouseInteractive) {
-      containerEl.addEventListener('mousemove', handleMouseMove);
-    }
+		if (mouseInteractive) {
+			containerEl.addEventListener("mousemove", handleMouseMove);
+		}
 
-    const setSize = () => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const width = Math.max(1, Math.floor(rect.width));
-      const height = Math.max(1, Math.floor(rect.height));
-      renderer.setSize(width, height);
-      const res = program.uniforms.iResolution.value;
-      res[0] = gl.drawingBufferWidth;
-      res[1] = gl.drawingBufferHeight;
-    };
+		const setSize = () => {
+			if (!containerRef.current) return;
+			const rect = containerRef.current.getBoundingClientRect();
+			const width = Math.max(1, Math.floor(rect.width));
+			const height = Math.max(1, Math.floor(rect.height));
+			renderer.setSize(width, height);
+			const res = program.uniforms.iResolution.value;
+			res[0] = gl.drawingBufferWidth;
+			res[1] = gl.drawingBufferHeight;
+		};
 
-    const ro = new ResizeObserver(setSize);
-    ro.observe(containerEl);
-    setSize();
+		const ro = new ResizeObserver(setSize);
+		ro.observe(containerEl);
+		setSize();
 
-    let raf = 0;
-    let lastFrame = 0;
-    let elapsedTime = 0;
+		let raf = 0;
+		let lastFrame = 0;
+		let elapsedTime = 0;
 
-    const renderFrame = t => {
-      if (!lastFrame) lastFrame = t;
-      const delta = (t - lastFrame) * 0.001;
-      lastFrame = t;
-      elapsedTime += delta;
+		const renderFrame = (t) => {
+			if (!lastFrame) lastFrame = t;
+			const delta = (t - lastFrame) * 0.001;
+			lastFrame = t;
+			elapsedTime += delta;
 
-      if (direction === 'pingpong') {
-        const pingpongDuration = 10;
-        const segmentTime = elapsedTime % pingpongDuration;
-        const isForward = Math.floor(elapsedTime / pingpongDuration) % 2 === 0;
-        const u = segmentTime / pingpongDuration;
-        const smooth = u * u * (3 - 2 * u);
-        const pingpongTime = isForward ? smooth * pingpongDuration : (1 - smooth) * pingpongDuration;
-        program.uniforms.uDirection.value = 1.0;
-        program.uniforms.iTime.value = pingpongTime;
-      } else {
-        program.uniforms.iTime.value = elapsedTime;
-      }
-      renderer.render({ scene: mesh });
-      raf = requestAnimationFrame(renderFrame);
-    };
+			if (direction === "pingpong") {
+				const pingpongDuration = 10;
+				const segmentTime = elapsedTime % pingpongDuration;
+				const isForward = Math.floor(elapsedTime / pingpongDuration) % 2 === 0;
+				const u = segmentTime / pingpongDuration;
+				const smooth = u * u * (3 - 2 * u);
+				const pingpongTime = isForward
+					? smooth * pingpongDuration
+					: (1 - smooth) * pingpongDuration;
+				program.uniforms.uDirection.value = 1.0;
+				program.uniforms.iTime.value = pingpongTime;
+			} else {
+				program.uniforms.iTime.value = elapsedTime;
+			}
+			renderer.render({ scene: mesh });
+			raf = requestAnimationFrame(renderFrame);
+		};
 
-    const startLoop = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(renderFrame);
-    };
+		const startLoop = () => {
+			if (raf) return;
+			raf = requestAnimationFrame(renderFrame);
+		};
 
-    const stopLoop = () => {
-      if (!raf) return;
-      cancelAnimationFrame(raf);
-      raf = 0;
-      lastFrame = 0;
-    };
+		const stopLoop = () => {
+			if (!raf) return;
+			cancelAnimationFrame(raf);
+			raf = 0;
+			lastFrame = 0;
+		};
 
-    const observer = new IntersectionObserver(entries => {
-      if (entries[0]?.isIntersecting) {
-        startLoop();
-      } else {
-        stopLoop();
-      }
-    }, { threshold: 0.15 });
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0]?.isIntersecting) {
+					startLoop();
+				} else {
+					stopLoop();
+				}
+			},
+			{ threshold: 0.15 },
+		);
 
-    observer.observe(containerEl);
-    startLoop();
+		observer.observe(containerEl);
+		startLoop();
 
-    return () => {
-      stopLoop();
-      observer.disconnect();
-      ro.disconnect();
-      if (mouseInteractive) {
-        containerEl.removeEventListener('mousemove', handleMouseMove);
-      }
-      try {
-        containerEl?.removeChild(canvas);
-      } catch {
-        console.warn('Canvas already removed from container');
-      }
-    };
-  }, [color, speed, direction, scale, opacity, mouseInteractive]);
+		return () => {
+			stopLoop();
+			observer.disconnect();
+			ro.disconnect();
+			if (mouseInteractive) {
+				containerEl.removeEventListener("mousemove", handleMouseMove);
+			}
+			try {
+				containerEl?.removeChild(canvas);
+			} catch {
+				console.warn("Canvas already removed from container");
+			}
+		};
+	}, [color, speed, direction, scale, opacity, mouseInteractive]);
 
-  return <div ref={containerRef} className="plasma-container" />;
+	return <div ref={containerRef} className="plasma-container" />;
 };
 
 export default Plasma;

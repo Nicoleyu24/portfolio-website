@@ -1,43 +1,41 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Notable } from "next/font/google";
-import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
+import "./globals.css";
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+	variable: "--font-geist-sans",
+	subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+	variable: "--font-geist-mono",
+	subsets: ["latin"],
 });
 
 const notable = Notable({
-  weight: "400",
-  variable: "--font-notable",
-  subsets: ["latin"],
+	weight: "400",
+	variable: "--font-notable",
+	subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Portfolio Website",
-  description: "Creative portfolio with smooth scroll animations",
+	title: "Portfolio Website",
+	description: "Creative portfolio with smooth scroll animations",
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${notable.variable} antialiased`}
-      >
-        <SmoothScroll>
-          {children}
-        </SmoothScroll>
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en" suppressHydrationWarning>
+			<body
+				className={`${geistSans.variable} ${geistMono.variable} ${notable.variable} antialiased`}
+			>
+				<SmoothScroll>{children}</SmoothScroll>
+			</body>
+		</html>
+	);
 }

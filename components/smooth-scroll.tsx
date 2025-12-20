@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
+import { useEffect } from "react";
 
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    if (typeof window === "undefined") return
+	useEffect(() => {
+		if (typeof window === "undefined") return;
 
-    const root = document.documentElement
-    const previous = root.style.scrollBehavior
+		const root = document.documentElement;
+		const previous = root.style.scrollBehavior;
 
-    // native smooth scrolling keeps interactions immediate
-    root.style.scrollBehavior = "smooth"
+		// native smooth scrolling keeps interactions immediate
+		root.style.scrollBehavior = "smooth";
 
-    return () => {
-      root.style.scrollBehavior = previous
-    }
-  }, [])
+		return () => {
+			root.style.scrollBehavior = previous;
+		};
+	}, []);
 
-  return <>{children}</>
+	return <>{children}</>;
 }

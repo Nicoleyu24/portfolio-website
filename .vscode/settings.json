@@ -1,0 +1,53 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  // Prefer Biome for editor feedback to avoid duplicate diagnostics
+  "eslint.enable": false,
+  "prettier.enable": false,
+  // Ensure workspace extension recommendations are shown
+  "extensions.ignoreRecommendations": false,
+  "extensions.showRecommendationsOnlyOnDemand": false,
+  // Monorepo hygiene
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.next": true,
+    "**/dist": true,
+    "**/build": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.next/**": true,
+    "**/dist/**": true,
+    "**/build/**": true
+  },
+  "python.defaultInterpreterPath": "${workspaceFolder}/services/recipe-api/.venv/bin/python",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/services/recipe-api/src",
+    "${workspaceFolder}/services/recipe-api/tests/api_client"
+  ],
+  "[python]": {
+    "editor.defaultFormatter": "astral-sh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    }
+  }
+}
