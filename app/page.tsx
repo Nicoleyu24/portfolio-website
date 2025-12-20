@@ -360,63 +360,68 @@ export default function Home() {
       </section>
 
       {/* Playground Section */}
-      <section id="playground" className="min-h-screen flex flex-col items-center justify-center gap-12 py-20">
-        <ScrollSection className="mx-auto w-full px-6 md:px-[155px]">
-          <div className="w-full space-y-4">
-            <div className="flex items-center gap-6">
-              <h2 className="text-sm font-semibold tracking-[0.5em] uppercase text-muted-foreground">
-                Playground
-              </h2>
-              <div className="h-px flex-1 bg-border" />
-            </div>
-            <p className="text-lg text-muted-foreground max-w-2xl">
+      <section id="playground" className="relative min-h-screen flex flex-col items-center justify-center gap-12 py-20 overflow-hidden">
+        <div
+          className="absolute inset-x-0 bottom-0 top-[80px] pointer-events-none"
+          aria-hidden
+          style={{
+            backgroundImage:
+              "linear-gradient(var(--playground-grid) 1px, transparent 1px), linear-gradient(90deg, var(--playground-grid) 1px, transparent 1px)",
+            backgroundSize: "120px 120px",
+            maskImage:
+              "linear-gradient(to bottom, transparent 5%, black 25%, black 75%, transparent 95%)",
+          }}
+        />
+        <ScrollSection className="mx-auto w-full px-6 md:px-[155px] relative z-10">
+          <div className="w-full space-y-4 text-center">
+            <h2 className="text-sm font-semibold tracking-[0.5em] uppercase text-muted-foreground">
+              Playground
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               A rotating set of experimental posters exploring motion, texture, and storytelling.
             </p>
           </div>
         </ScrollSection>
-        <div className="w-full px-6 md:px-[155px]">
-          <div
-            className="marquee-container mx-auto py-6"
-            onMouseEnter={handlePlaygroundEnter}
-            onMouseLeave={handlePlaygroundLeave}
-            onFocusCapture={handlePlaygroundEnter}
-            onBlurCapture={handlePlaygroundLeave}
-          >
-            <div
-              className="marquee-track gap-6"
-              style={{ "--marquee-duration": marqueeDuration } as CSSProperties}
-            >
-              {[...playgroundCards, ...playgroundCards].map((project, index) => (
-                <div
-                  key={`${project.id}-${index}`}
-                  className="w-32 sm:w-40 lg:w-48 flex-shrink-0 text-center"
-                >
-                  <div
-                    className="relative aspect-[3/4] rounded-[32px] shadow-2xl border border-border/40 overflow-hidden"
-                    style={{
-                      background: `linear-gradient(140deg, ${project.palette[0]}, ${project.palette[1]})`,
-                    }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/35" />
-                    <div className="absolute top-5 left-5 text-sm font-semibold text-white/80">
-                      #{project.id}
-                    </div>
-                    <div className="absolute bottom-5 left-5 right-5 text-left text-white">
-                      <p className="text-[10px] uppercase tracking-[0.4em] opacity-80">
-                        {project.tags.join(" • ")}
-                      </p>
-                      <p className="mt-2 text-lg font-semibold leading-snug">
-                        {project.title}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-                    {project.description}
+
+        <div className="relative w-full h-[600px] max-w-[1400px] mx-auto mt-10">
+          {playgroundCards.map((project, index) => {
+            // Calculate scattered positions
+            const positions = [
+              { top: "10%", left: "15%", rotate: "-6deg" },
+              { top: "20%", right: "15%", rotate: "4deg" },
+              { bottom: "15%", left: "25%", rotate: "2deg" },
+              { bottom: "25%", right: "20%", rotate: "-3deg" },
+            ]
+            const pos = positions[index % positions.length]
+
+            return (
+              <motion.div
+                key={project.id}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="absolute w-64 md:w-72 aspect-[3/4] rounded-[32px] shadow-2xl border border-border/40 overflow-hidden hover:z-20 hover:scale-105 transition-all duration-300"
+                style={{
+                  ...pos,
+                  background: `linear-gradient(140deg, ${project.palette[0]}, ${project.palette[1]})`,
+                }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/35" />
+                <div className="absolute top-6 left-6 text-sm font-semibold text-white/80">
+                  #{project.id}
+                </div>
+                <div className="absolute bottom-6 left-6 right-6 text-left text-white">
+                  <p className="text-[10px] uppercase tracking-[0.4em] opacity-80">
+                    {project.tags.join(" • ")}
+                  </p>
+                  <p className="mt-2 text-xl font-semibold leading-snug">
+                    {project.title}
                   </p>
                 </div>
-              ))}
-            </div>
-          </div>
+              </motion.div>
+            )
+          })}
         </div>
       </section>
 
@@ -434,44 +439,16 @@ export default function Home() {
               A range of skills and tools I use to bring ideas to life
             </p>
           </div>
-          <div className="relative">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-              className="relative overflow-hidden rounded-3xl border border-border/60 shadow-2xl backdrop-blur-xl"
-              style={{
-                background:
-                  "linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.15))",
-                WebkitMaskImage:
-                  "radial-gradient(circle at 20% 20%, rgba(0,0,0,0.25), transparent 40%), radial-gradient(circle at 80% 10%, rgba(0,0,0,0.18), transparent 45%), linear-gradient(#000, #000)",
-              }}
-            >
+
+          <div className="relative w-full overflow-hidden py-10">
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-background to-transparent z-10" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-background to-transparent z-10" />
+
+            <div className="marquee-container marquee-reverse">
               <div
-                className="absolute inset-0 opacity-80 dark:opacity-90"
-                aria-hidden
-                style={{
-                  background: [
-                    "radial-gradient(circle at 20% 20%, rgba(59,130,246,0.18), transparent 35%)",
-                    "radial-gradient(circle at 80% 0%, rgba(236,72,153,0.12), transparent 30%)",
-                    "linear-gradient(120deg, rgba(255,255,255,0.14), rgba(255,255,255,0.05))",
-                    "linear-gradient(transparent 0%, rgba(255,255,255,0.08) 100%)",
-                  ].join(", "),
-                }}
-              />
-              <div
-                className="absolute inset-0 opacity-30 dark:opacity-40"
-                aria-hidden
-                style={{
-                  backgroundImage:
-                    "linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px)",
-                  backgroundSize: "120px 120px",
-                  maskImage:
-                    "radial-gradient(circle at 20% 20%, rgba(0,0,0,0.35), transparent 45%), radial-gradient(circle at 70% 30%, rgba(0,0,0,0.3), transparent 40%), linear-gradient(#000,#000)",
-                }}
-              />
-              <div className="relative grid md:grid-cols-2 gap-8 p-8 md:p-10 lg:p-12">
+                className="marquee-track gap-6"
+                style={{ "--marquee-duration": "40s" } as CSSProperties}
+              >
                 {[
                   { title: "UX/UI Design", description: "Premium digital experiences across journeys, systems, and interfaces that feel intentional.", icon: "🧭" },
                   { title: "User Research", description: "End-to-end research and testing that translate insight into confident decisions.", icon: "🔍" },
@@ -479,34 +456,40 @@ export default function Home() {
                   { title: "Prototyping", description: "High-fidelity interactive prototypes to validate and communicate ideas quickly.", icon: "✨" },
                   { title: "Vibe Coding", description: "AI-assisted buildouts that speed design-to-live, keeping fidelity and nuance.", icon: "🤖" },
                   { title: "Graphic Design", description: "Distinctive visuals and storytelling that elevate the brand’s voice.", icon: "🎨" },
-                ].map((skill) => (
-                  <motion.div
-                    key={skill.title}
-                    whileHover={{ scale: 1.015, y: -3 }}
-                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                    className="flex items-start gap-4 rounded-2xl bg-white/5 dark:bg-white/0 p-4"
+                  // Duplicate for infinite scroll
+                  { title: "UX/UI Design", description: "Premium digital experiences across journeys, systems, and interfaces that feel intentional.", icon: "🧭" },
+                  { title: "User Research", description: "End-to-end research and testing that translate insight into confident decisions.", icon: "🔍" },
+                  { title: "Behavioural Science", description: "Empathy-led flows informed by behavioral principles for intuitive interactions.", icon: "🧠" },
+                  { title: "Prototyping", description: "High-fidelity interactive prototypes to validate and communicate ideas quickly.", icon: "✨" },
+                  { title: "Vibe Coding", description: "AI-assisted buildouts that speed design-to-live, keeping fidelity and nuance.", icon: "🤖" },
+                  { title: "Graphic Design", description: "Distinctive visuals and storytelling that elevate the brand’s voice.", icon: "🎨" },
+                ].map((skill, index) => (
+                  <div
+                    key={`${skill.title}-${index}`}
+                    className="flex-shrink-0 w-[400px] flex items-start gap-4 rounded-2xl bg-white/5 border border-border/40 p-6 hover:bg-white/10 transition-colors"
                   >
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary/25 via-accent/20 to-primary/10 backdrop-blur text-lg shadow-inner">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/25 via-accent/20 to-primary/10 backdrop-blur text-lg shadow-inner">
                       <span aria-hidden>{skill.icon}</span>
                     </div>
-                    <div className="space-y-1">
+                    <div className="space-y-2">
                       <h3 className="text-lg font-semibold text-foreground">{skill.title}</h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">{skill.description}</p>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
-            </motion.div>
+            </div>
           </div>
+
           <div
-            className="relative mt-[100px] w-full"
+            className="relative mt-[60px] w-full"
             onMouseEnter={handleToolsEnter}
             onMouseLeave={handleToolsLeave}
             onFocusCapture={handleToolsEnter}
             onBlurCapture={handleToolsLeave}
           >
-            <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-background via-background/80 to-transparent" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-background via-background/80 to-transparent" />
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-background via-background/80 to-transparent z-10" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-background via-background/80 to-transparent z-10" />
             <div
               className="marquee-container"
               style={{
