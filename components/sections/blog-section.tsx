@@ -13,7 +13,7 @@ export default function BlogSection() {
 	return (
 		<section
 			id="blog"
-			className="min-h-screen flex items-center justify-center px-6 md:px-[155px] py-20"
+			className="relative z-10 min-h-screen flex items-center justify-center px-6 md:px-[155px] py-20"
 		>
 			<ScrollSection className="mx-auto w-full">
 				<div className="text-center mb-16">

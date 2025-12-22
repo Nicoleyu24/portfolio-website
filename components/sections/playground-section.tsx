@@ -38,7 +38,7 @@ export default function PlaygroundSection() {
 	return (
 		<section
 			id="playground"
-			className="relative min-h-screen flex flex-col items-center justify-center gap-12 py-20 pb-8 overflow-hidden"
+			className="relative z-10 min-h-screen flex flex-col items-center justify-center gap-12 py-20 pb-8 overflow-hidden"
 		>
 			<div
 				className="absolute inset-x-0 bottom-0 top-[80px] pointer-events-none"

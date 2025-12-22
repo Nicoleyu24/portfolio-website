@@ -19,7 +19,7 @@ export function ScrollSection({
 }: ScrollSectionProps) {
 	const { ref, inView } = useInView({
 		threshold: 0.1,
-		triggerOnce: false,
+		triggerOnce: true,
 	});
 
 	const sectionRef = useRef<HTMLDivElement>(null);

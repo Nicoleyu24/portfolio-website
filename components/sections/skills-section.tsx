@@ -115,7 +115,7 @@ export default function SkillsSection() {
 	const toolsBadge = (tool: string) => (
 		<div
 			key={`tool-${tool}`}
-			className="flex-shrink-0 rounded-full border border-border/60 bg-card shadow-sm px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+			className="flex-shrink-0 px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
 		>
 			{tool}
 		</div>
@@ -124,7 +124,7 @@ export default function SkillsSection() {
 	return (
 		<section
 			id="skillsets"
-			className="min-h-screen flex items-center justify-center px-6 md:px-[155px] pt-0 pb-20"
+			className="relative z-10 min-h-screen flex items-center justify-center px-6 md:px-[155px] pt-0 pb-20"
 		>
 			<ScrollSection className="mx-auto w-full space-y-10">
 				<div className="w-full space-y-4">
@@ -140,10 +140,15 @@ export default function SkillsSection() {
 				</div>
 
 				<div className="relative w-full overflow-hidden py-10">
-					<div className="pointer-events-none absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-background to-transparent z-10" />
-					<div className="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-background to-transparent z-10" />
-
-					<div className="marquee-container marquee-reverse">
+					<div
+						className="marquee-container marquee-reverse"
+						style={{
+							WebkitMaskImage:
+								"linear-gradient(90deg, transparent 0%, black 15%, black 85%, transparent 100%)",
+							maskImage:
+								"linear-gradient(90deg, transparent 0%, black 15%, black 85%, transparent 100%)",
+						}}
+					>
 						<div
 							className="marquee-track gap-6"
 							style={{ "--marquee-duration": "40s" } as CSSProperties}
@@ -152,9 +157,9 @@ export default function SkillsSection() {
 								return (
 									<div
 										key={`${skill.title}-${index}`}
-										className="flex-shrink-0 w-[400px] flex items-start gap-4 rounded-2xl bg-white/5 border border-border/40 p-6 hover:bg-white/10 transition-colors"
+										className="flex-shrink-0 w-[400px] flex items-start gap-4 p-6 transition-colors group"
 									>
-										<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/25 via-accent/20 to-primary/10 backdrop-blur text-lg shadow-inner">
+										<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/25 via-accent/20 to-primary/10 backdrop-blur text-lg shadow-inner group-hover:scale-110 transition-transform">
 											<span aria-hidden>{skill.icon}</span>
 										</div>
 										<div className="space-y-2">
@@ -178,15 +183,13 @@ export default function SkillsSection() {
 					onMouseEnter={handleToolsEnter}
 					onMouseLeave={handleToolsLeave}
 				>
-					<div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-background via-background/80 to-transparent z-10" />
-					<div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-background via-background/80 to-transparent z-10" />
 					<div
 						className="marquee-container"
 						style={{
 							WebkitMaskImage:
-								"linear-gradient(90deg, transparent 0%, black 6%, black 94%, transparent 100%)",
+								"linear-gradient(90deg, transparent 0%, black 15%, black 85%, transparent 100%)",
 							maskImage:
-								"linear-gradient(90deg, transparent 0%, black 6%, black 94%, transparent 100%)",
+								"linear-gradient(90deg, transparent 0%, black 15%, black 85%, transparent 100%)",
 						}}
 					>
 						<div

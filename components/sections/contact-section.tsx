@@ -6,7 +6,7 @@ export default function ContactSection() {
 	return (
 		<section
 			id="contact"
-			className="min-h-screen flex items-center justify-center px-6 md:px-[155px] py-20"
+			className="relative z-10 min-h-screen flex items-center justify-center px-6 md:px-[155px] py-20"
 		>
 			<ScrollSection className="max-w-4xl mx-auto text-center">
 				<Badge className="mb-4">Get In Touch</Badge>

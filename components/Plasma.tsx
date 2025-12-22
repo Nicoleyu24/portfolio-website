@@ -1,16 +1,15 @@
 import { Mesh, Program, Renderer, Triangle } from "ogl";
+import type React from "react";
 import { useEffect, useRef } from "react";
-import "./Plasma.css";
 
-const hexToRgb = (hex) => {
-	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-	if (!result) return [1, 0.5, 0.2];
-	return [
-		parseInt(result[1], 16) / 255,
-		parseInt(result[2], 16) / 255,
-		parseInt(result[3], 16) / 255,
-	];
-};
+interface PlasmaProps {
+	color?: string;
+	speed?: number;
+	direction?: "forward" | "reverse" | "pingpong";
+	scale?: number;
+	opacity?: number;
+	mouseInteractive?: boolean;
+}
 
 const vertex = `#version 300 es
 precision highp float;
@@ -47,6 +46,7 @@ void mainImage(out vec4 o, vec2 C) {
   float i, d, z, T = iTime * uSpeed * uDirection;
   vec3 O, p, S;
 
+  // can change here: ++i < x where x higher means more stuff
   for (vec2 r = iResolution.xy, Q; ++i < 60.; O += o.w/d*o.xyz) {
     p = z*normalize(vec3(C-.5*r,r.y)); 
     p.z -= 4.; 
@@ -56,7 +56,9 @@ void mainImage(out vec4 o, vec2 C) {
     p.x += .4*(1.+p.y)*sin(d + p.x*0.1)*cos(.34*d + p.x*0.05); 
     Q = p.xz *= mat2(cos(p.y+vec4(0,11,33,0)-T)); 
     z+= d = abs(sqrt(length(Q*Q)) - .25*(5.+S.y))/3.+8e-4; 
-    o = 1.+sin(S.y+p.z*.5+S.z-length(S-p)+vec4(2,1,0,8));
+    float t = S.y+p.z*.5+S.z-length(S-p);
+    vec3 c = 0.5 + 0.5 * cos(6.28318 * (t * 0.15 + vec3(0.6, 0.8, 0.0)));
+    o = vec4(c * 2.0, 1.0 + sin(t + 8.0));
   }
   
   o.xyz = tanh(O/1e4);
@@ -84,36 +86,55 @@ void main() {
   fragColor = vec4(finalColor, alpha);
 }`;
 
-export const Plasma = ({
-	color = "#ffffff",
+export const Plasma: React.FC<PlasmaProps & { className?: string }> = ({
+	color,
 	speed = 1,
 	direction = "forward",
 	scale = 1,
 	opacity = 1,
 	mouseInteractive = true,
+	className = "",
 }) => {
-	const containerRef = useRef(null);
+	const containerRef = useRef<HTMLDivElement | null>(null);
 	const mousePos = useRef({ x: 0, y: 0 });
 
 	useEffect(() => {
 		if (!containerRef.current) return;
-		const containerEl = containerRef.current;
+
+		const resolveColor = (colorStr: string | null) => {
+			if (!colorStr) return [1, 1, 1] as [number, number, number];
+
+			// 1. Resolve CSS variables if present
+			let finalColor = colorStr;
+			if (colorStr.startsWith("var(")) {
+				const temp = document.createElement("div");
+				temp.style.color = colorStr;
+				temp.style.display = "none";
+				document.body.appendChild(temp);
+				finalColor = getComputedStyle(temp).color;
+				document.body.removeChild(temp);
+			}
+
+			// 2. Use a canvas to resolve the color to RGB
+			const canvas = document.createElement("canvas");
+			canvas.width = 1;
+			canvas.height = 1;
+			const ctx = canvas.getContext("2d");
+			if (!ctx) return [1, 1, 1] as [number, number, number];
+
+			ctx.fillStyle = finalColor;
+			ctx.fillRect(0, 0, 1, 1);
+			const data = ctx.getImageData(0, 0, 1, 1).data;
+
+			return [data[0] / 255, data[1] / 255, data[2] / 255] as [
+				number,
+				number,
+				number,
+			];
+		};
 
 		const useCustomColor = color ? 1.0 : 0.0;
-		const customColorRgb = color ? hexToRgb(color) : [1, 1, 1];
-		const prefersReducedMotion = window.matchMedia(
-			"(prefers-reduced-motion: reduce)",
-		).matches;
-
-		if (prefersReducedMotion) {
-			const fallback = `radial-gradient(circle at 20% 20%, ${color}55, transparent 55%), radial-gradient(circle at 80% 0%, ${color}33, transparent 45%), linear-gradient(180deg, rgba(4,7,15,0.9), rgba(1,2,6,0.6))`;
-			const previousBackground = containerEl.style.background;
-			containerEl.style.background = fallback;
-
-			return () => {
-				containerEl.style.background = previousBackground;
-			};
-		}
+		const customColorRgb = resolveColor(color || null);
 
 		const directionMultiplier = direction === "reverse" ? -1.0 : 1.0;
 
@@ -121,14 +142,15 @@ export const Plasma = ({
 			webgl: 2,
 			alpha: true,
 			antialias: false,
-			dpr: Math.min(window.devicePixelRatio || 1, 1.5),
+			// ... , x) x higher means smoother
+			dpr: Math.min(window.devicePixelRatio || 1, 0.3),
 		});
 		const gl = renderer.gl;
-		const canvas = gl.canvas;
+		const canvas = gl.canvas as HTMLCanvasElement;
 		canvas.style.display = "block";
 		canvas.style.width = "100%";
 		canvas.style.height = "100%";
-		containerEl.appendChild(canvas);
+		containerRef.current.appendChild(canvas);
 
 		const geometry = new Triangle(gl);
 
@@ -151,18 +173,25 @@ export const Plasma = ({
 
 		const mesh = new Mesh(gl, { geometry, program });
 
-		const handleMouseMove = (e) => {
+		const handleMouseMove = (e: MouseEvent) => {
 			if (!mouseInteractive || !containerRef.current) return;
-			const rect = containerRef.current.getBoundingClientRect();
-			mousePos.current.x = e.clientX - rect.left;
-			mousePos.current.y = e.clientY - rect.top;
-			const mouseUniform = program.uniforms.uMouse.value;
+
+			// Use offsetX/Y for better performance than getBoundingClientRect
+			// This works because the event target is likely the canvas or container
+			// and we want coordinates relative to that.
+			// const rect = containerRef.current.getBoundingClientRect();
+			// mousePos.current.x = e.clientX - rect.left;
+			// mousePos.current.y = e.clientY - rect.top;
+			mousePos.current.x = e.offsetX;
+			mousePos.current.y = e.offsetY;
+
+			const mouseUniform = program.uniforms.uMouse.value as Float32Array;
 			mouseUniform[0] = mousePos.current.x;
 			mouseUniform[1] = mousePos.current.y;
 		};
 
-		if (mouseInteractive) {
-			containerEl.addEventListener("mousemove", handleMouseMove);
+		if (mouseInteractive && containerRef.current) {
+			containerRef.current.addEventListener("mousemove", handleMouseMove);
 		}
 
 		const setSize = () => {
@@ -171,85 +200,75 @@ export const Plasma = ({
 			const width = Math.max(1, Math.floor(rect.width));
 			const height = Math.max(1, Math.floor(rect.height));
 			renderer.setSize(width, height);
-			const res = program.uniforms.iResolution.value;
+			const res = program.uniforms.iResolution.value as Float32Array;
 			res[0] = gl.drawingBufferWidth;
 			res[1] = gl.drawingBufferHeight;
 		};
 
 		const ro = new ResizeObserver(setSize);
-		ro.observe(containerEl);
+		ro.observe(containerRef.current);
 		setSize();
 
 		let raf = 0;
-		let lastFrame = 0;
-		let elapsedTime = 0;
-
-		const renderFrame = (t) => {
-			if (!lastFrame) lastFrame = t;
-			const delta = (t - lastFrame) * 0.001;
-			lastFrame = t;
-			elapsedTime += delta;
-
+		const t0 = performance.now();
+		const loop = (t: number) => {
+			const timeValue = (t - t0) * 0.001;
 			if (direction === "pingpong") {
 				const pingpongDuration = 10;
-				const segmentTime = elapsedTime % pingpongDuration;
-				const isForward = Math.floor(elapsedTime / pingpongDuration) % 2 === 0;
+				const segmentTime = timeValue % pingpongDuration;
+				const isForward = Math.floor(timeValue / pingpongDuration) % 2 === 0;
 				const u = segmentTime / pingpongDuration;
 				const smooth = u * u * (3 - 2 * u);
 				const pingpongTime = isForward
 					? smooth * pingpongDuration
 					: (1 - smooth) * pingpongDuration;
-				program.uniforms.uDirection.value = 1.0;
-				program.uniforms.iTime.value = pingpongTime;
+				(program.uniforms.uDirection as { value: number }).value = 1.0;
+				(program.uniforms.iTime as { value: number }).value = pingpongTime;
 			} else {
-				program.uniforms.iTime.value = elapsedTime;
+				(program.uniforms.iTime as { value: number }).value = timeValue;
 			}
 			renderer.render({ scene: mesh });
-			raf = requestAnimationFrame(renderFrame);
+			raf = requestAnimationFrame(loop);
 		};
+		raf = requestAnimationFrame(loop);
 
-		const startLoop = () => {
-			if (raf) return;
-			raf = requestAnimationFrame(renderFrame);
-		};
+		const observer = new MutationObserver(() => {
+			if (color?.startsWith("var(")) {
+				const newColorRgb = resolveColor(color);
+				const colorUniform = program.uniforms.uCustomColor
+					.value as Float32Array;
+				colorUniform[0] = newColorRgb[0];
+				colorUniform[1] = newColorRgb[1];
+				colorUniform[2] = newColorRgb[2];
+			}
+		});
 
-		const stopLoop = () => {
-			if (!raf) return;
-			cancelAnimationFrame(raf);
-			raf = 0;
-			lastFrame = 0;
-		};
+		observer.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ["class"],
+		});
 
-		const observer = new IntersectionObserver(
-			(entries) => {
-				if (entries[0]?.isIntersecting) {
-					startLoop();
-				} else {
-					stopLoop();
-				}
-			},
-			{ threshold: 0.15 },
-		);
-
-		observer.observe(containerEl);
-		startLoop();
+		const currentContainer = containerRef.current;
 
 		return () => {
-			stopLoop();
-			observer.disconnect();
+			cancelAnimationFrame(raf);
 			ro.disconnect();
-			if (mouseInteractive) {
-				containerEl.removeEventListener("mousemove", handleMouseMove);
+			observer.disconnect();
+			if (mouseInteractive && currentContainer) {
+				currentContainer.removeEventListener("mousemove", handleMouseMove);
 			}
 			try {
-				containerEl?.removeChild(canvas);
-			} catch {
-				console.warn("Canvas already removed from container");
-			}
+				currentContainer?.removeChild(canvas);
+			} catch {}
 		};
 	}, [color, speed, direction, scale, opacity, mouseInteractive]);
 
-	return <div ref={containerRef} className="plasma-container" />;
+	return (
+		<div
+			ref={containerRef}
+			className={`w-full h-full relative overflow-hidden ${className}`}
+		/>
+	);
 };
 
 export default Plasma;

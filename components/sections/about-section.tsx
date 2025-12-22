@@ -13,7 +13,7 @@ export default function AboutSection() {
 	return (
 		<section
 			id="about"
-			className="min-h-screen flex items-center justify-center px-6 md:px-[155px] py-20"
+			className="relative z-10 min-h-screen flex items-center justify-center px-6 md:px-[155px] py-20"
 		>
 			<ScrollSection className="mx-auto">
 				<div className="grid md:grid-cols-2 gap-12 items-center">
