@@ -10,6 +10,7 @@ import HeroSection from "@/components/sections/hero-section";
 import PlaygroundSection from "@/components/sections/playground-section";
 import ProjectsSection from "@/components/sections/projcets-section";
 import SkillsSection from "@/components/sections/skills-section";
+import TestimonialsSection from "@/components/sections/testimonials-section";
 import { SidebarNav } from "@/components/sidebar-nav";
 
 export default function Home() {
@@ -27,6 +28,7 @@ export default function Home() {
 			<ProjectsSection />
 			<PlaygroundSection />
 			<SkillsSection />
+			<TestimonialsSection />
 			<AboutSection />
 			<BlogSection />
 			<ContactSection />

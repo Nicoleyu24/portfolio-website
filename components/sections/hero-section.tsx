@@ -1,4 +1,4 @@
-import { animate, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRef } from "react";
 import { ScrollSection } from "../scroll-section";
 import VariableProximity from "../VariableProximity";
@@ -12,12 +12,7 @@ export default function HeroSection() {
 		if (projectsSection) {
 			const targetY =
 				projectsSection.getBoundingClientRect().top + window.scrollY;
-			const startY = window.scrollY;
-			animate(startY, targetY, {
-				duration: 3,
-				ease: "easeOut",
-				onUpdate: (latest) => window.scrollTo(0, latest),
-			});
+			window.scrollTo({ top: targetY, behavior: "instant" });
 		}
 	};
 

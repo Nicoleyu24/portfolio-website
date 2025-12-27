@@ -1,5 +1,4 @@
 import { ScrollSection } from "../scroll-section";
-import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import {
 	Card,
@@ -18,19 +17,18 @@ export default function AboutSection() {
 			<ScrollSection className="mx-auto">
 				<div className="grid md:grid-cols-2 gap-12 items-center">
 					<div>
-						<Badge className="mb-4">About Me</Badge>
+						<h2 className="text-sm font-semibold tracking-[0.5em] uppercase text-muted-foreground mb-4">
+							About Me as A Creator.
+						</h2>
 						<h2 className="text-4xl md:text-5xl font-bold mb-6">
 							I'm a UX Designer
 						</h2>
-						<p className="text-lg text-muted-foreground mb-4">
-							With a passion for creating beautiful and functional user
-							experiences, I specialize in turning complex problems into simple,
-							elegant solutions.
-						</p>
 						<p className="text-lg text-muted-foreground mb-6">
-							My work focuses on human-centered design, where every pixel and
-							interaction serves a purpose. I believe in the power of design to
-							transform how people interact with technology.
+							Half designer, half behaviour nerd! I love decoding users's needs,
+							turning human quirks into practical designs, and chasing that
+							"aha" moment where it all just works. My favourite part of design
+							is solving problems that make life a little easier for someone
+							else.
 						</p>
 						<Button variant="outline">Learn More</Button>
 					</div>

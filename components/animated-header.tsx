@@ -60,7 +60,7 @@ export function AnimatedHeader({ title }: AnimatedHeaderProps) {
 				<div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 					{/* Portfolio Title */}
 					<motion.div
-						className="flex items-center gap-1 md:gap-2"
+						className="flex items-center gap-1 md:gap-2 -ml-[100px]"
 						style={{
 							scale: portfolioScale,
 							x: portfolioX,
