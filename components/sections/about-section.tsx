@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ScrollSection } from "../scroll-section";
 import { Button } from "../ui/button";
 import {
@@ -17,18 +18,35 @@ export default function AboutSection() {
 			<ScrollSection className="mx-auto">
 				<div className="grid md:grid-cols-2 gap-12 items-center">
 					<div>
-						<h2 className="text-sm font-semibold tracking-[0.5em] uppercase text-muted-foreground mb-4">
-							About Me as A Creator.
+						<div className="flex items-center justify-between mb-2">
+							<h2 className="text-sm font-semibold tracking-[0.5em] uppercase text-muted-foreground">
+								About Me as A Creator.
+							</h2>
+							<div className="relative w-32 h-32 rounded-full overflow-hidden ring-4 ring-primary/20 shadow-xl hover:ring-primary/40 transition-all duration-300">
+								<Image
+									src="/avatar.png"
+									alt="Nicole Yu"
+									fill
+									className="object-cover"
+									priority
+								/>
+							</div>
+						</div>
+						<h2 className="text-3xl md:text-4xl font-semibold mb-6">
+							Professional designer and self-taught developer.
 						</h2>
-						<h2 className="text-4xl md:text-5xl font-bold mb-6">
-							I'm a UX Designer
-						</h2>
-						<p className="text-lg text-muted-foreground mb-6">
+						<p className="text-xl text-muted-foreground mb-6">
 							Half designer, half behaviour nerd! I love decoding users's needs,
 							turning human quirks into practical designs, and chasing that
 							"aha" moment where it all just works. My favourite part of design
 							is solving problems that make life a little easier for someone
 							else.
+						</p>
+						<p className="text-xl text-muted-foreground mb-6">
+							From start-ups to small-size enterprises, to non-profits and
+							beyond, I have experiences working with clients to enhance their
+							brand, web presence, and creating from zero to one. I offer
+							services that help your businesses stand out and thrive!
 						</p>
 						<Button variant="outline">Learn More</Button>
 					</div>
