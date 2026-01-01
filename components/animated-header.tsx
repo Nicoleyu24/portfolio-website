@@ -8,6 +8,7 @@ import {
 } from "framer-motion";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "./theme-toggle";
+import { LegoN } from "./ui/lego-n";
 
 interface AnimatedHeaderProps {
 	title: string;
@@ -25,7 +26,6 @@ const navItems = [
 export function AnimatedHeader({ title }: AnimatedHeaderProps) {
 	const { scrollY } = useScroll();
 	const [isScrolled, setIsScrolled] = useState(false);
-
 	useEffect(() => {
 		const unsubscribe = scrollY.on("change", (latest) => {
 			setIsScrolled(latest > 100);
@@ -85,7 +85,16 @@ export function AnimatedHeader({ title }: AnimatedHeaderProps) {
 												damping: 17,
 											}}
 										>
-											{letter === " " ? "\u00A0" : letter}
+											{letter === "N" && index === 0 ? (
+												<LegoN
+													size="md"
+													className="inline-block align-middle -mt-2 mr-1"
+												/>
+											) : letter === " " ? (
+												"\u00A0"
+											) : (
+												letter
+											)}
 										</motion.span>
 									))}
 								</motion.div>
@@ -121,7 +130,7 @@ export function AnimatedHeader({ title }: AnimatedHeaderProps) {
 				</div>
 			</motion.header>
 
-			{/* Compact P Logo - appears when scrolled */}
+			{/* Compact Lego N Logo - appears in upper left */}
 			<AnimatePresence>
 				{isScrolled && (
 					<motion.div
@@ -133,11 +142,11 @@ export function AnimatedHeader({ title }: AnimatedHeaderProps) {
 					>
 						<motion.a
 							href="#hero"
-							className="text-3xl md:text-4xl font-notable bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent cursor-pointer block"
-							whileHover={{ scale: 1.2 }}
+							className="cursor-pointer block"
+							whileHover={{ scale: 1.1 }}
 							transition={{ type: "spring", stiffness: 400, damping: 17 }}
 						>
-							N
+							<LegoN />
 						</motion.a>
 					</motion.div>
 				)}

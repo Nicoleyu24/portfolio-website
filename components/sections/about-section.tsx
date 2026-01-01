@@ -1,4 +1,8 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
+import { JourneyRoadmap } from "../journey-roadmap";
 import { ScrollSection } from "../scroll-section";
 import { Button } from "../ui/button";
 import {
@@ -10,12 +14,14 @@ import {
 } from "../ui/card";
 
 export default function AboutSection() {
+	const [showRoadmap, setShowRoadmap] = useState(false);
+
 	return (
 		<section
 			id="about"
 			className="relative z-10 min-h-screen flex items-center justify-center px-6 md:px-[155px] py-20"
 		>
-			<ScrollSection className="mx-auto">
+			<ScrollSection className="mx-auto w-full">
 				<div className="grid md:grid-cols-2 gap-12 items-center">
 					<div>
 						<div className="flex items-center justify-between mb-2">
@@ -48,35 +54,51 @@ export default function AboutSection() {
 							brand, web presence, and creating from zero to one. I offer
 							services that help your businesses stand out and thrive!
 						</p>
-						<Button variant="outline">Learn More</Button>
+						<Button
+							variant="outline"
+							onClick={() => setShowRoadmap(!showRoadmap)}
+						>
+							{showRoadmap ? "Hide" : "Learn More"}
+						</Button>
 					</div>
-					<Card className="p-8">
-						<CardHeader>
-							<CardTitle>Design Philosophy</CardTitle>
-							<CardDescription>Principles that guide my work</CardDescription>
-						</CardHeader>
-						<CardContent className="space-y-4">
-							<div>
-								<h3 className="font-semibold mb-2">User-Centered</h3>
-								<p className="text-sm text-muted-foreground">
-									Every decision starts with the user's needs and goals.
-								</p>
+					<div className="relative min-h-[500px] flex items-center justify-center">
+						{!showRoadmap ? (
+							<Card className="p-8 w-full">
+								<CardHeader>
+									<CardTitle>Design Philosophy</CardTitle>
+									<CardDescription>
+										Principles that guide my work
+									</CardDescription>
+								</CardHeader>
+								<CardContent className="space-y-4">
+									<div>
+										<h3 className="font-semibold mb-2">User-Centered</h3>
+										<p className="text-sm text-muted-foreground">
+											Every decision starts with the user's needs and goals.
+										</p>
+									</div>
+									<div>
+										<h3 className="font-semibold mb-2">Simplicity</h3>
+										<p className="text-sm text-muted-foreground">
+											Less is more. Clean, intuitive interfaces that feel
+											natural.
+										</p>
+									</div>
+									<div>
+										<h3 className="font-semibold mb-2">Innovation</h3>
+										<p className="text-sm text-muted-foreground">
+											Pushing boundaries while maintaining usability and
+											accessibility.
+										</p>
+									</div>
+								</CardContent>
+							</Card>
+						) : (
+							<div className="w-full animate-in fade-in zoom-in duration-500">
+								<JourneyRoadmap />
 							</div>
-							<div>
-								<h3 className="font-semibold mb-2">Simplicity</h3>
-								<p className="text-sm text-muted-foreground">
-									Less is more. Clean, intuitive interfaces that feel natural.
-								</p>
-							</div>
-							<div>
-								<h3 className="font-semibold mb-2">Innovation</h3>
-								<p className="text-sm text-muted-foreground">
-									Pushing boundaries while maintaining usability and
-									accessibility.
-								</p>
-							</div>
-						</CardContent>
-					</Card>
+						)}
+					</div>
 				</div>
 			</ScrollSection>
 		</section>

@@ -1,5 +1,6 @@
 import { useInView } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
 import Masonry, { type MasonryItem } from "../masonry";
 import { ScrollSection } from "../scroll-section";
@@ -32,6 +33,7 @@ const bentoProjects: BentoProject[] = [
 			"linear-gradient(135deg, rgba(140,214,255,0.28), rgba(255,255,255,0.04))",
 		eyebrow: "Product strategy",
 		height: 520,
+		url: "/case-studies/vitalink",
 	},
 	{
 		id: "mobile-banking",
@@ -200,6 +202,14 @@ export default function ProjectsSection() {
 		);
 
 		if (project.url) {
+			const isInternal = project.url.startsWith("/");
+			if (isInternal) {
+				return (
+					<Link href={project.url} className="block h-full">
+						{card}
+					</Link>
+				);
+			}
 			return (
 				<a
 					href={project.url}
