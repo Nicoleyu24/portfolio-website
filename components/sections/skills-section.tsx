@@ -67,48 +67,11 @@ const designSkills = [
 			"Distinctive visuals and storytelling that elevate the brand’s voice.",
 		icon: "🎨",
 	},
-	// Duplicate for infinite scroll
-	{
-		title: "UX/UI Design",
-		description:
-			"Premium digital experiences across journeys, systems, and interfaces that feel intentional.",
-		icon: "🧭",
-	},
-	{
-		title: "User Research",
-		description:
-			"End-to-end research and testing that translate insight into confident decisions.",
-		icon: "🔍",
-	},
-	{
-		title: "Behavioural Science",
-		description:
-			"Empathy-led flows informed by behavioral principles for intuitive interactions.",
-		icon: "🧠",
-	},
-	{
-		title: "Prototyping",
-		description:
-			"High-fidelity interactive prototypes to validate and communicate ideas quickly.",
-		icon: "✨",
-	},
-	{
-		title: "Vibe Coding",
-		description:
-			"AI-assisted buildouts that speed design-to-live, keeping fidelity and nuance.",
-		icon: "🤖",
-	},
-	{
-		title: "Graphic Design",
-		description:
-			"Distinctive visuals and storytelling that elevate the brand’s voice.",
-		icon: "🎨",
-	},
 ];
 
 export default function SkillsSection() {
 	const [isToolsHovered, setIsToolsHovered] = useState(false);
-	const toolsMarqueeDuration = isToolsHovered ? "56s" : "28s";
+	const toolsMarqueeDuration = isToolsHovered ? "50s" : "50s";
 	const handleToolsEnter = () => setIsToolsHovered(true);
 	const handleToolsLeave = () => setIsToolsHovered(false);
 
@@ -127,7 +90,7 @@ export default function SkillsSection() {
 			className="relative z-10 min-h-screen flex items-center justify-center px-6 md:px-[155px] pt-0 pb-20"
 		>
 			<ScrollSection className="mx-auto w-full space-y-10">
-				<div className="w-full space-y-4">
+				<div className="w-full space-y-4 pl-[10px]">
 					<div className="flex items-center gap-6">
 						<h2 className="text-sm font-semibold tracking-[0.5em] uppercase text-muted-foreground">
 							What I bring to the table
@@ -135,46 +98,31 @@ export default function SkillsSection() {
 						<div className="h-px flex-1 bg-border" />
 					</div>
 					<p className="text-lg text-muted-foreground max-w-2xl">
-						A range of skills and tools I use to bring ideas to life
+						Skills I apply in practice
 					</p>
 				</div>
 
-				<div className="relative w-full overflow-hidden py-10">
-					<div
-						className="marquee-container marquee-reverse"
-						style={{
-							WebkitMaskImage:
-								"linear-gradient(90deg, transparent 0%, black 15%, black 85%, transparent 100%)",
-							maskImage:
-								"linear-gradient(90deg, transparent 0%, black 15%, black 85%, transparent 100%)",
-						}}
-					>
-						<div
-							className="marquee-track gap-6"
-							style={{ "--marquee-duration": "40s" } as CSSProperties}
-						>
-							{designSkills.map((skill, index) => {
-								return (
-									<div
-										key={`${skill.title}-${index}`}
-										className="flex-shrink-0 w-[400px] flex items-start gap-4 p-6 transition-colors group"
-									>
-										<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/25 via-accent/20 to-primary/10 backdrop-blur text-lg shadow-inner group-hover:scale-110 transition-transform">
-											<span aria-hidden>{skill.icon}</span>
-										</div>
-										<div className="space-y-2">
-											<h3 className="text-lg font-semibold text-foreground">
-												{skill.title}
-											</h3>
-											<p className="text-sm text-muted-foreground leading-relaxed">
-												{skill.description}
-											</p>
-										</div>
-									</div>
-								);
-							})}
-						</div>
-					</div>
+				<div className="grid grid-cols-2 gap-x-[20px] gap-y-8 py-10">
+					{designSkills.map((skill, index) => {
+						return (
+							<div
+								key={`${skill.title}-${index}`}
+								className="flex items-start gap-4 p-6 transition-colors group"
+							>
+								<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/25 via-accent/20 to-primary/10 backdrop-blur text-lg shadow-inner group-hover:scale-110 transition-transform">
+									<span aria-hidden>{skill.icon}</span>
+								</div>
+								<div className="space-y-2">
+									<h3 className="text-lg font-semibold text-foreground">
+										{skill.title}
+									</h3>
+									<p className="text-sm text-muted-foreground leading-relaxed">
+										{skill.description}
+									</p>
+								</div>
+							</div>
+						);
+					})}
 				</div>
 
 				<section
@@ -183,6 +131,9 @@ export default function SkillsSection() {
 					onMouseEnter={handleToolsEnter}
 					onMouseLeave={handleToolsLeave}
 				>
+					<p className="text-lg text-muted-foreground mb-6 pl-[10px]">
+						Tools I use to support my work ✨
+					</p>
 					<div
 						className="marquee-container"
 						style={{

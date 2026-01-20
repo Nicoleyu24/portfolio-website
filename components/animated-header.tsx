@@ -77,7 +77,7 @@ export function AnimatedHeader({ title }: AnimatedHeaderProps) {
 										<motion.span
 											// biome-ignore lint/suspicious/noArrayIndexKey: imported component
 											key={index}
-											className="text-xl md:text-[26px] lg:text-[38px] font-notable bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent inline-block cursor-pointer"
+											className="text-xl md:text-[26px] lg:text-[38px] font-sans font-black bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent inline-block cursor-pointer"
 											whileHover={{ scale: 1.2 }}
 											transition={{
 												type: "spring",
