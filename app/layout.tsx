@@ -1,11 +1,16 @@
 import SmoothScroll from "@/components/SmoothScroll";
 import type { Metadata } from "next";
-import { Geist_Mono, Roboto } from "next/font/google";
+import { Geist_Mono, Playfair_Display, Roboto } from "next/font/google";
 import "./globals.css";
 
 const roboto = Roboto({
 	weight: ["400", "500", "700", "900"],
 	variable: "--font-roboto",
+	subsets: ["latin"],
+});
+
+const playfair = Playfair_Display({
+	variable: "--font-playfair",
 	subsets: ["latin"],
 });
 
@@ -27,7 +32,7 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body
-				className={`${roboto.variable} ${geistMono.variable} antialiased font-sans`}
+				className={`${roboto.variable} ${playfair.variable} ${geistMono.variable} antialiased font-sans`}
 			>
 				<SmoothScroll>{children}</SmoothScroll>
 			</body>

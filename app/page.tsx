@@ -36,7 +36,7 @@ export default function Home() {
 			{/* Footer */}
 			<footer className="relative z-10 py-12 px-6 md:px-[155px] border-t border-border">
 				<div className="mx-auto text-center text-muted-foreground">
-					<p>© 2024 Portfolio. All rights reserved.</p>
+					<p>© 2026 Nicole Yu. Made by Nicole with ♡ and 🍵</p>
 				</div>
 			</footer>
 		</div>
