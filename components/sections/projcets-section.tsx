@@ -38,9 +38,9 @@ const bentoProjects: BentoProject[] = [
 	{
 		id: "mobile-banking",
 		order: "02",
-		title: "Mobile Banking App",
+		title: "KOHO Budgeting Feature",
 		description:
-			"Modern mobile banking application with intuitive navigation and secure transaction flows",
+			"Simplifying budgeting and making savings more visible for over 1 million users in Canada",
 		tags: ["UI/UX", "Mobile", "Fintech"],
 		accent: "#f2d6ff",
 		background:
@@ -50,7 +50,7 @@ const bentoProjects: BentoProject[] = [
 		imageHeight: "h-80",
 		imageStyle: { objectPosition: "center 80%" },
 		height: 520,
-		url: "https://contra.com/p/LOgceg2b-fintech-ui-budget-feature",
+		url: "/case-studies/add-a-feature",
 	},
 	{
 		id: "autism-site",
