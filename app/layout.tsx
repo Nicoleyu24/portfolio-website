@@ -1,6 +1,6 @@
-import SmoothScroll from "@/components/SmoothScroll";
 import type { Metadata } from "next";
 import { Geist_Mono, Playfair_Display, Roboto } from "next/font/google";
+import SmoothScroll from "@/components/SmoothScroll";
 import "./globals.css";
 
 const roboto = Roboto({

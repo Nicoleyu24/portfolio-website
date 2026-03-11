@@ -1,12 +1,12 @@
 "use client";
 
-import { Plasma } from "@/components/Plasma";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { Plasma } from "@/components/Plasma";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 export default function VitalinkCaseStudy() {
 	return (

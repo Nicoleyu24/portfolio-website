@@ -16,9 +16,9 @@ interface AnimatedHeaderProps {
 
 const navItems = [
 	{ label: "Projects", href: "#projects" },
-	{ label: "Playground", href: "#playground" },
 	{ label: "Skillsets", href: "#skillsets" },
 	{ label: "About Me", href: "#about" },
+	{ label: "Playground", href: "#playground" },
 	{ label: "Blog", href: "#blog" },
 	{ label: "Contact", href: "#contact" },
 ];

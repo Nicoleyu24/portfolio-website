@@ -26,10 +26,10 @@ export default function Home() {
 
 			<HeroSection />
 			<ProjectsSection />
-			<PlaygroundSection />
 			<SkillsSection />
 			<TestimonialsSection />
 			<AboutSection />
+			<PlaygroundSection />
 			<BlogSection />
 			<ContactSection />
 
