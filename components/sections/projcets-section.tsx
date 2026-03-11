@@ -22,35 +22,37 @@ type BentoProject = MasonryItem & {
 
 const bentoProjects: BentoProject[] = [
 	{
-		id: "healthtech",
-		order: "01",
-		title: "Healthtech application",
-		description:
-			"A comprehensive redesign of an e-commerce platform focusing on user experience and conversion optimization",
-		tags: ["UI/UX", "Design", "E-Commerce"],
-		accent: "#8cd6ff",
-		background:
-			"linear-gradient(135deg, rgba(140,214,255,0.28), rgba(255,255,255,0.04))",
-		eyebrow: "Product strategy",
-		height: 520,
-		url: "/case-studies/vitalink",
-	},
-	{
 		id: "mobile-banking",
-		order: "02",
+		order: "01",
 		title: "KOHO Budgeting Feature",
 		description:
-			"Simplifying budgeting and making savings more visible for over 1 million users in Canada",
+			"Simplifying budgeting and making savings more visible for users in Canada",
 		tags: ["UI/UX", "Mobile", "Fintech"],
 		accent: "#f2d6ff",
 		background:
 			"linear-gradient(160deg, rgba(242,214,255,0.25), rgba(255,255,255,0.08))",
 		eyebrow: "Fintech systems",
 		image: "/projects/fintech-card.png",
-		imageHeight: "h-80",
+		imageHeight: "h-[450px]",
 		imageStyle: { objectPosition: "center 80%" },
-		height: 520,
+		height: 680,
 		url: "/case-studies/add-a-feature",
+	},
+	{
+		id: "healthtech",
+		order: "02",
+		title: "Telehealth application",
+		description:
+			"AI-powered insights to streamline healthcare access in North America",
+		tags: ["UI/UX", "Healthtech", "AI"],
+		accent: "#8cd6ff",
+		background:
+			"linear-gradient(135deg, rgba(140,214,255,0.28), rgba(255,255,255,0.04))",
+		eyebrow: "Clinical healthtech",
+		image: "/projects/telehealth-thumb.png",
+		imageHeight: "h-[450px]",
+		height: 680,
+		url: "https://contra.com/p/vbesoelk-easing-tele-health-communication-with-vitalink?r=nicole_cwzib6rq",
 	},
 	{
 		id: "autism-site",
@@ -64,7 +66,7 @@ const bentoProjects: BentoProject[] = [
 			"linear-gradient(145deg, rgba(255,227,189,0.3), rgba(255,255,255,0.08))",
 		eyebrow: "Inclusive design",
 		url: "https://contra.com/p/sAYQ6goB-designing-a-joyful-web-experience-for-children-with-autism?referralExperimentNid=DEFAULT_REFERRAL_PROGRAM&referrerUsername=nicole_cwzib6rq",
-		height: 520,
+		height: 680,
 	},
 	{
 		id: "appointments",
@@ -77,7 +79,7 @@ const bentoProjects: BentoProject[] = [
 		background:
 			"linear-gradient(120deg, rgba(180,242,225,0.25), rgba(255,255,255,0.08))",
 		eyebrow: "Service design",
-		height: 520,
+		height: 680,
 	},
 	{
 		id: "learning-platform",
@@ -90,7 +92,7 @@ const bentoProjects: BentoProject[] = [
 		background:
 			"linear-gradient(150deg, rgba(215,224,255,0.3), rgba(255,255,255,0.08))",
 		eyebrow: "EdTech",
-		height: 520,
+		height: 680,
 	},
 	{
 		id: "wellness-companion",
@@ -103,7 +105,7 @@ const bentoProjects: BentoProject[] = [
 		background:
 			"linear-gradient(135deg, rgba(255,214,227,0.32), rgba(255,255,255,0.08))",
 		eyebrow: "AI experiences",
-		height: 520,
+		height: 680,
 	},
 ];
 
@@ -144,7 +146,7 @@ export default function ProjectsSection() {
 						</span>
 					</div>
 					<div
-						className={`relative my-6 w-full overflow-hidden rounded-[28px] border border-white/50 bg-white/20 shadow-[inset_0_1px_2px_0_rgba(255,255,255,0.3)] backdrop-blur-xl ${project.imageHeight || "h-44"}`}
+						className={`relative my-6 w-full overflow-hidden rounded-[28px] border border-white/50 bg-white/20 shadow-[inset_0_1px_2px_0_rgba(255,255,255,0.3)] backdrop-blur-xl ${project.imageHeight || "h-[450px]"}`}
 					>
 						{project.image ? (
 							<Image
@@ -227,7 +229,7 @@ export default function ProjectsSection() {
 	return (
 		<section
 			id="projects"
-			className="relative z-10 -mt-[800px] px-6 md:px-[155px] pb-24"
+			className="relative z-10 -mt-[800px] px-6 md:px-[155px] pb-4"
 		>
 			<ScrollSection className="mx-auto w-full max-w-[calc(100vw-20px)]">
 				<div ref={bentoSectionRef} className="relative">
@@ -237,7 +239,7 @@ export default function ProjectsSection() {
 							stagger={0.08}
 							animateFrom="bottom"
 							hoverScale={0.98}
-							className="min-h-[1080px]"
+							className="w-full"
 							renderItem={(item) => renderProjectCard(item as BentoProject)}
 						/>
 					) : (

@@ -139,7 +139,12 @@
 		background-color: var(--background);
 	}
 
-	h1, h2, h3, h4, h5, h6 {
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
 		font-family: var(--font-roboto);
 	}
 
@@ -147,7 +152,6 @@
 		font-family: var(--font-geist-mono);
 	}
 }
-
 
 @layer utilities {
 	.marquee-container {
@@ -180,7 +184,7 @@
 	color: rgba(15, 23, 42, 0.9);
 	filter: blur(0.35px);
 	mix-blend-mode: normal;
-	text-shadow: 
+	text-shadow:
 		0 0 12px rgba(59, 130, 246, 0.7),
 		0 0 25px rgba(59, 130, 246, 0.4),
 		0 0 45px rgba(59, 130, 246, 0.2);
@@ -191,7 +195,7 @@
 	color: rgba(255, 255, 255, 0.9);
 	mix-blend-mode: screen;
 	filter: blur(0.45px);
-	text-shadow: 
+	text-shadow:
 		0 0 12px rgba(168, 85, 247, 0.7),
 		0 0 25px rgba(168, 85, 247, 0.4),
 		0 0 45px rgba(168, 85, 247, 0.2);

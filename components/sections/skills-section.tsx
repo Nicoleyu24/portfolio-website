@@ -87,7 +87,7 @@ export default function SkillsSection() {
 	return (
 		<section
 			id="skillsets"
-			className="relative z-10 min-h-screen flex items-center justify-center px-6 md:px-[155px] pt-0 pb-20"
+			className="relative z-10 px-6 md:px-[155px] pt-0 pb-12 md:pb-24"
 		>
 			<ScrollSection className="mx-auto w-full space-y-10">
 				<div className="w-full space-y-4 pl-[10px]">
